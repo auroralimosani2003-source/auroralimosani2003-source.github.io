@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aurora Limosani — Portfolio Creativo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/splitting/dist/splitting.css">
+<script src="https://unpkg.com/splitting/dist/splitting.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+.phone-mockup {
+  position: relative;
+  width: 220px;
+  height: 440px;
+  background: var(--ink);
+  border-radius: 36px;
+  padding: 12px;
+  margin: 0.5rem auto; 
+  box-shadow:
+    0 0 0 2px rgba(123,94,167,.4),
+    0 0 0 5px rgba(197,163,219,.15),
+    0 40px 80px rgba(123,94,167,.2);
+}
+.phone-notch {
+  position: absolute;
+  top: 14px; left: 50%;
+  transform: translateX(-50%);
+  width: 60px; height: 6px;
+  background: rgba(255,255,255,.15);
+  border-radius: 10px;
+  z-index: 2;
+}
+
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  border-radius: 26px;
+  overflow: hidden;
+  position: relative;
+}
+.tiktok-feed {
+  display: flex;
+  flex-direction: row;
+  transition: transform 1.2s cubic-bezier(.23,1,.32,1);
+}
+.tiktok-slide {
+  width: 100%;
+  height: 416px;
+  flex-shrink: 0;
+  position: relative;
+}
+.tiktok-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.phone-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,.85);
+  border: none;
+  border-radius: 50%;
+  width: 32px; height: 32px;
+  font-size: 1.2rem;
+  color: var(--deep);
+  cursor: none;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  transition: background .3s, transform .3s;
+}
+.phone-btn:hover {
+  background: white;
+  transform: translateY(-50%) scale(1.1);
+}
+.phone-btn.prev { left: -44px; }
+.phone-btn.next { right: -44px; }
+.tiktok-ui {
+
+
+  position: absolute;
+  right: 12px;
+  bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  z-index: 10;
+}
+.tiktok-heart,
+.tiktok-comment,
+.tiktok-share {
+  font-size: 1.3rem;
+  color: white;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,.4));
+  cursor: none;
+}
+
+.phone-screen {
+  width: 100%; height: 100%;
+  border-radius: 26px;
+  overflow: hidden;
+}
+.phone-screen img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+
+:root{
+  --azure:#fbeeee;--violet:#a3b4db;--rose:#cadff8;
+  --deep:#14213f;--cream:#faf8f6;--ink:#16111f;
+  --ink-soft:#2c2438;--mid:#0c032b;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'Inter',sans-serif;
+}
+html{scroll-behavior:auto}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);overflow-x:hidden;cursor:none}
+
+/* LOADER */
+#loader{
+  position:fixed;inset:0;z-index:10000;
+  background:transparent;
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:1.5rem;
+  pointer-events:none;
+}
+.loader-name{
+  font-family:var(--serif);font-size:clamp(2rem,5vw,4rem);
+  font-style:italic;color:var(--ink);letter-spacing:.05em;
+  opacity:0;transform:translateY(20px);
+  text-shadow:0 2px 40px rgba(241, 221, 254, 0.4);
+}
+.loader-bar{
+  width:200px;height:1px;background:rgba(123,94,167,.2);
+  position:relative;overflow:hidden;
+}
+.loader-fill{
+  position:absolute;top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,var(--deep),var(--violet));
+  animation:loadFill 1.2s ease forwards;
+}
+@keyframes loadFill{to{left:0}}
+
+/* CURSOR */
+#cursor{
+  position:fixed;width:12px;height:12px;
+  background:var(--deep);border-radius:50%;
+  pointer-events:none;z-index:9999;mix-blend-mode:multiply;
+  transform:translate(-50%,-50%);
+  transition:width .3s,height .3s;
+}
+#cursor-ring{
+  position:fixed;width:40px;height:40px;
+  border:1.5px solid rgba(123,94,167,.5);
+  border-radius:50%;pointer-events:none;z-index:9998;
+  transform:translate(-50%,-50%);
+  transition:width .45s cubic-bezier(.23,1,.32,1),
+             height .45s cubic-bezier(.23,1,.32,1),
+             border-color .4s;
+}
+/* cursor magnetic blob that follows with delay */
+#cursor-blob{
+  position:fixed;width:260px;height:260px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(197,163,219,.18) 0%,transparent 70%);
+  pointer-events:none;z-index:0;
+  transform:translate(-50%,-50%);
+  mix-blend-mode:multiply;
+  transition:opacity .5s;
+}
+
+/* CANVAS */
+#bg-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;background:var(--cream)}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:1rem 5rem;
+  background:rgba(250,248,246,0);
+  transition:background .5s,backdrop-filter .5s;
+}
+nav.scrolled{background:rgba(212, 225, 234, 0.68);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.nav-logo{font-family:var(--serif);font-size:1rem;font-style:italic;color:var(--ink-soft);letter-spacing:.05em}
+.nav-links{display:flex;gap:2.8rem;list-style:none}
+.nav-links a{font-size:.65rem;font-weight:400;letter-spacing:.2em;text-transform:uppercase;color:var(--mid);text-decoration:none;transition:color .3s}
+.nav-links a:hover{color:var(--deep)}
+
+/* SECTIONS */
+section{position:relative;z-index:1;min-height:100vh;display:flex;align-items:center}
+.container{width:100%;max-width:1380px;margin:0 auto;padding:0 5rem}
+.divider{width:100%;height:1px;background:linear-gradient(to right,transparent,rgba(123,94,167,.2),transparent);position:relative;z-index:1}
+
+/* CHAPTER TAG */
+
+.chapter-tag{
+  display:inline-flex;align-items:center;gap:.7rem;
+  font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--mid);
+  margin-bottom:2.8rem;
+}
+.chapter-tag::before{content:'';display:inline-block;width:28px;height:1px;background:var(--deep)}
+
+/* ═══ HERO ═══ */
+#hero{min-height:100vh;align-items:flex-end;padding-bottom:9vh;overflow:hidden}
+.hero-inner{width:100%;padding:0 5rem}
+.hero-eyebrow{font-size:.62rem;letter-spacing:.35em;text-transform:uppercase;color:var(--mid);margin-bottom:2.2rem;opacity:0}
+.hero-title{
+  font-family:var(--serif);
+  font-size:clamp(3.5rem,8.5vw,10.5rem);
+  line-height:.92;font-weight:900;color:var(--ink);margin-bottom:1.8rem;
+}
+.hero-title em{font-style:italic;color:var(--deep)}
+.hero-name{font-family:var(--serif);font-size:clamp(1.2rem,2.2vw,2.1rem);font-style:italic;font-weight:400;color:var(--mid);margin-bottom:3rem;opacity:0}
+.hero-roles{display:flex;gap:1.2rem;flex-wrap:wrap;margin-bottom:3rem;opacity:0}
+.role-pill{font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--mid);padding:.4rem .95rem;border:1px solid rgba(123,94,167,.28);border-radius:100px;transition:background .3s,color .3s,border-color .3s}
+.role-pill:hover{background:var(--deep);color:#fff;border-color:var(--deep)}
+.hero-cta{display:inline-flex;align-items:center;gap:1rem;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);text-decoration:none;opacity:0}
+.cta-line{width:44px;height:1px;background:var(--deep);transition:width .5s cubic-bezier(.23,1,.32,1)}
+.hero-cta:hover .cta-line{width:80px}
+.scroll-hint{position:absolute;bottom:2.5rem;right:5rem;font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:var(--mid);writing-mode:vertical-rl;opacity:0;display:flex;align-items:center;gap:.7rem}
+.scroll-hint::before{content:'';display:block;width:1px;height:50px;background:linear-gradient(to bottom,transparent,var(--deep))}
+
+/* MARQUEE strip */
+.marquee-strip{
+  position:relative;z-index:2;
+  width:100%;overflow:hidden;padding:1.2rem 0;
+  background:rgba(211, 218, 233, 0.6);backdrop-filter:blur(12px);
+  border-top:1px solid rgba(123,94,167,.12);
+  border-bottom:1px solid rgba(123,94,167,.12);
+}
+.marquee-inner{display:flex;gap:4rem;white-space:nowrap;animation:marquee 22s linear infinite}
+.marquee-inner span{font-family:var(--serif);font-size:.85rem;font-style:italic;color:var(--mid);flex-shrink:0}
+.marquee-inner em{color:var(--deep);font-style:normal}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ═══ ABOUT ═══ */
+#about{padding:13vh 0}
+.about-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:7rem;align-items:center}
+.about-heading{font-family:var(--serif);font-size:clamp(2.6rem,4.5vw,5rem);line-height:1.08;font-weight:700;color:var(--ink)}
+.about-heading em{font-style:italic;color:var(--deep)}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin-top:3.5rem;padding-top:3rem;border-top:1px solid rgba(123,94,167,.12)}
+.stat-item .num{font-family:var(--serif);font-size:2.6rem;font-weight:900;color:var(--ink);line-height:1}
+.stat-item .lbl{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--mid);margin-top:.4rem;line-height:1.5}
+.about-right{display:flex;flex-direction:column;gap:1.6rem}
+.about-body{font-size:.92rem;line-height:1.9;color:var(--mid);max-width:44ch;font-weight:300}
+.about-quote{font-family:var(--serif);font-size:1.3rem;font-style:italic;color:var(--deep);line-height:1.55;max-width:32ch;padding-left:1.5rem;border-left:2px solid rgba(123,94,167,.3);margin-top:.5rem}
+
+/* ═══ KEY NUMBERS ═══ */
+#numbers{padding:12vh 0}
+.numbers-intro{display:grid;grid-template-columns:1fr 2fr;gap:6rem;align-items:end;margin-bottom:5rem}
+.numbers-heading{font-family:var(--serif);font-size:clamp(2.8rem,5vw,5.5rem);line-height:1.05;font-weight:900;color:var(--ink)}
+.numbers-heading em{font-style:italic;color:var(--deep)}
+.numbers-sub{font-size:.9rem;color:var(--mid);line-height:1.8;max-width:42ch;font-weight:300;align-self:end}
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(113, 94, 167, 0.12);border:1px solid rgba(28, 4, 65, 0.12)}
+.kpi-cell{
+  padding:3.5rem 3rem;
+  background:rgba(239, 248, 250, 0.94);
+  transition:background .35s,transform .35s;
+  position:relative;overflow:hidden;
+}
+.kpi-cell::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 30% 40%,rgba(182, 163, 219, 0.2),transparent 60%);
+  opacity:0;transition:opacity .4s;
+}
+.kpi-cell:hover::after{opacity:1}
+.kpi-cell:hover{background:rgba(205, 205, 248, 0.95);transform:translateY(-3px)}
+.kpi-val{font-family:var(--serif);font-size:clamp(2rem,3.5vw,3.6rem);font-weight:900;color:var(--ink);line-height:1;margin-bottom:.6rem}
+.kpi-val em{font-style:italic;color:var(--deep)}
+.kpi-label{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--mid)}
+
+/* ═══ SERVICES ═══ */
+#services{padding:13vh 0}
+.services-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:5rem}
+.services-heading{font-family:var(--serif);font-size:clamp(2.8rem,5.5vw,6.5rem);line-height:1;font-weight:900;color:var(--ink)}
+.services-heading em{font-style:italic;color:var(--deep)}
+.services-note{max-width:28ch;font-size:.85rem;color:var(--mid);line-height:1.75;text-align:right;font-weight:300}
+.service-row{
+  display:grid;grid-template-columns:4rem 1fr auto;align-items:center;gap:3rem;
+  padding:2rem 0;border-top:1px solid rgba(123,94,167,.1);cursor:none;
+  transition:padding .4s;position:relative;overflow:hidden;
+}
+.service-row::before{
+  content:'';position:absolute;left:0;bottom:0;width:0;height:1px;
+  background:var(--deep);transition:width .5s cubic-bezier(.23,1,.32,1);
+}
+.service-row:hover::before{width:100%}
+.service-row:last-child{border-bottom:1px solid rgba(123,94,167,.1)}
+.service-row:hover{padding-left:1rem}
+.service-n{font-family:var(--serif);font-size:.8rem;font-style:italic;color:rgba(123,94,167,.4)}
+.service-name{font-family:var(--serif);font-size:clamp(1.3rem,2.2vw,2rem);font-weight:700;color:var(--ink);transition:color .35s,transform .35s}
+.service-row:hover .service-name{color:var(--deep);transform:translateX(8px)}
+.service-tag{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--mid);padding:.35rem .9rem;border:1px solid rgba(123,94,167,.2);border-radius:100px;transition:background .3s,color .3s,border-color .3s}
+.service-row:hover .service-tag{background:var(--deep);color:#fff;border-color:var(--deep)}
+
+/* ═══ STORY ═══ */
+#story{padding:13vh 0}
+.story-heading{font-family:var(--serif);font-size:clamp(3rem,6vw,7rem);font-weight:900;color:var(--ink);margin-bottom:6rem}
+.story-heading em{font-style:italic;color:var(--deep)}
+.tl-item{display:grid;grid-template-columns:10rem 1px 1fr;gap:2.5rem;align-items:start;padding-bottom:3.5rem}
+.tl-item:last-child{padding-bottom:0}
+.tl-year{font-family:var(--serif);font-size:3rem;font-weight:900;color:transparent;-webkit-text-stroke:1px rgba(123,94,167,.25);line-height:1;text-align:right;padding-right:2.5rem;transition:color .4s,-webkit-text-stroke .4s}
+.tl-item:hover .tl-year{color:rgba(123,94,167,.12);-webkit-text-stroke:1px rgba(123,94,167,.6)}
+.tl-line{width:1px;min-height:90px;background:linear-gradient(to bottom,rgba(123,94,167,.5),transparent)}
+.tl-content{padding-top:.3rem}
+.tl-title{font-family:var(--serif);font-size:1.35rem;font-weight:700;color:var(--ink);margin-bottom:.7rem}
+.tl-body{font-size:.86rem;color:var(--mid);line-height:1.8;max-width:46ch;font-weight:300}
+
+/* ═══ CLIENTS ═══ */
+#clients{padding:12vh 0}
+.clients-heading{font-family:var(--serif);font-size:clamp(2.5rem,4.5vw,5rem);font-weight:900;color:var(--ink);margin-bottom:1.2rem}
+.clients-heading em{font-style:italic;color:var(--deep)}
+.clients-sub{font-size:.88rem;color:var(--mid);font-weight:300;line-height:1.75;max-width:52ch;margin-bottom:4.5rem}
+.clients-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(123,94,167,.12)}
+.client-cell{
+  padding:2.8rem 2.5rem;
+  background:rgba(236, 244, 251, 0.96);
+  transition:background .3s,transform .35s;
+  position:relative;overflow:hidden;
+}
+.client-cell::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--deep);transition:width .45s cubic-bezier(.23,1,.32,1)}
+.client-cell:hover::after{width:100%}
+.client-cell:hover{background:rgba(189, 217, 250, 0.95);transform:translateY(-4px)}
+.client-name{font-family:var(--serif);font-size:1.05rem;font-weight:700;color:var(--ink);margin-bottom:.4rem}
+.client-type{font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--mid)}
+.collab-note{margin-top:3.5rem;font-family:var(--serif);font-size:1.1rem;font-style:italic;color:var(--mid);max-width:58ch;line-height:1.7}
+.collab-note strong{color:var(--deep);font-weight:700}
+
+/* ═══ PHILOSOPHY ═══ */
+#philosophy{padding:13vh 0}
+.phil-inner{display:grid;grid-template-columns:1fr 1fr;gap:8rem;align-items:center}
+.phil-heading{font-family:var(--serif);font-size:clamp(2.4rem,4vw,4.5rem);line-height:1.12;font-weight:700;color:var(--ink)}
+.phil-heading em{font-style:italic;color:var(--deep)}
+.phil-pillars{margin-top:3rem;display:flex;flex-direction:column;gap:1.5rem}
+.pillar{display:flex;align-items:flex-start;gap:1.4rem;transition:transform .35s}
+.pillar:hover{transform:translateX(8px)}
+.pillar-n{font-family:var(--serif);font-size:.75rem;font-style:italic;color:var(--deep);min-width:1.5rem;padding-top:.15rem}
+.pillar-text{font-size:.86rem;line-height:1.8;color:var(--mid);font-weight:300}
+.phil-glass{
+  padding:3.5rem;
+  background:rgba(155, 180, 226, 0.5);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
+  border:1px solid rgba(255,255,255,.8);border-radius:28px;
+  box-shadow:0 16px 80px rgba(123,94,167,.1);
+  transition:transform .5s,box-shadow .5s;
+}
+.phil-glass:hover{transform:translateY(-6px);box-shadow:0 24px 100px rgba(123,94,167,.15)}
+.phil-quote{font-family:var(--serif);font-size:1.3rem;font-style:italic;line-height:1.7;color:var(--ink-soft);margin-bottom:1.8rem}
+.phil-attr{font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--mid)}
+
+/* ═══ CONTACT ═══ */
+#contact{padding:14vh 0 10vh}
+.contact-inner{display:grid;grid-template-columns:1fr 1fr;gap:8rem;align-items:end}
+.contact-heading{font-family:var(--serif);font-size:clamp(2.8rem,5vw,6rem);line-height:1.05;font-weight:900;color:var(--ink)}
+.contact-heading em{font-style:italic;color:var(--deep)}
+.contact-body{font-size:.88rem;color:var(--mid);font-weight:300;line-height:1.8;max-width:40ch;margin-top:1.8rem}
+.contact-detail{margin-top:2.8rem}
+.c-label{font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:var(--mid);margin-bottom:.5rem}
+.c-link{font-family:var(--serif);font-size:1.05rem;font-style:italic;color:var(--ink-soft);text-decoration:none;transition:color .3s}
+.c-link:hover{color:var(--deep)}
+.social-row{display:flex;gap:2rem;margin-top:2.2rem}
+.soc{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--mid);text-decoration:none;transition:color .3s,transform .3s;display:inline-block}
+.soc:hover{color:var(--deep);transform:translateY(-2px)}
+.start-btn{
+  display:inline-flex;align-items:center;gap:1.2rem;
+  margin-top:2.5rem;padding:1rem 2.2rem 1rem 1.2rem;
+  background:var(--ink);color:#fff;
+  font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;
+  text-decoration:none;border-radius:100px;
+  transition:background .35s,transform .35s,box-shadow .35s;
+}
+.start-btn .dot{width:7px;height:7px;background:var(--rose);border-radius:50%}
+.start-btn:hover{background:var(--deep);transform:translateY(-3px);box-shadow:0 12px 40px rgba(123,94,167,.3)}
+
+/* FOOTER */
+footer{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center;padding:2rem 5rem;border-top:1px solid rgba(123,94,167,.1);font-size:.58rem;letter-spacing:.18em;color:var(--mid);text-transform:uppercase}
+
+/* NOISE */
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");background-size:200px 200px;opacity:.022;pointer-events:none;z-index:500}
+
+/* SPLITTING */
+.split-title .word{overflow:hidden;display:inline-block}
+.split-title .char{display:inline-block;will-change:transform,opacity}
+.fade-up{opacity:0;transform:translateY(36px)}
+
+/* RESPONSIVE */
+@media(max-width:960px){
+  nav{padding:1.5rem 2rem}
+  .hero-inner,.container{padding:0 2rem}
+  .about-grid,.phil-inner,.contact-inner,.numbers-intro{grid-template-columns:1fr;gap:3rem}
+  .clients-grid{grid-template-columns:repeat(2,1fr)}
+  .kpi-grid{grid-template-columns:1fr 1fr}
+  footer{padding:1.5rem 2rem;flex-direction:column;gap:.5rem;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-name">Aurora Limosani</div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+</div>
+
+<canvas id="bg-canvas"></canvas>
+<div id="cursor-blob"></div>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<!-- NAV -->
+
+
+<nav id="main-nav">
+  <div class="nav-logo">Aurora Limosani</div>
+  <ul class="hero-roles">
+    <li><a class="role-pill" href="#about">About</a></li>
+    <li><a class="role-pill" href="#numbers">Numeri</a></li>
+    <li><a class="role-pill" href="#services">Servizi</a></li>
+    <li><a class="role-pill" href="#clients">Clienti</a></li>
+    <li><a class="role-pill" href="#contact">Contatto</a></li>
+  </ul>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section id="hero">
+  <div class="hero-inner">
+    <p class="hero-eyebrow">— Content Creator · Digital Strategist</p>
+    <h1 class="hero-title split-title">
+      Racconto<br>
+      con <em>Creatività</em><br>
+      la storia dei brand
+    </h1>
+    <p class="hero-name">Aurora Limosani</p>
+    <div class="hero-roles">
+      <span class="role-pill">Content Creation</span>
+      <span class="role-pill">Digital Strategy</span>
+      <span class="role-pill">Social Media</span>
+      <span class="role-pill">Graphic Design</span>
+      <span class="role-pill">Video Editing</span>
+       <span class="role-pill">Digital Consulting</span>
+    </div>
+    <a href="#about" class="hero-cta">
+      <span class="cta-line"></span>
+      Scopri il mio mondo
+    </a>
+  </div>
+  <div class="scroll-hint">Scorri per esplorare</div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-strip">
+  <div class="marquee-inner">
+    <span>Content Creation</span><em>✦</em>
+    <span>220k+ Followers</span><em>✦</em>
+    <span>Digital Strategy</span><em>✦</em>
+    <span>6.3M Views</span><em>✦</em>
+    <span>Social Media Manager</span><em>✦</em>
+    <span>80+ Brand Collab</span><em>✦</em>
+    <span>Video Editing</span><em>✦</em>
+    <span>Content Creation</span><em>✦</em>
+    <span>220k+ Followers</span><em>✦</em>
+    <span>Digital Strategy</span><em>✦</em>
+    <span>6.3M Views</span><em>✦</em>
+    <span>Social Media Manager</span><em>✦</em>
+    <span>80+ Brand Collab</span><em>✦</em>
+    <span>Video Editing</span><em>✦</em>
+  
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══ ABOUT ═══ -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div>
+        <div class="chapter-tag fade-up">Capitolo I — Chi sono</div>
+        
+        <h2 class="about-heading split-title fade-up">
+          Creatività,<br>dati e una<br>dose di <em>sole</em>
+        </h2>
+
+       <div class="phone-mockup fade-up" id="phonetiktok">
+  <div class="phone-notch"></div>
+  <div class="phone-screen">
+    <div class="tiktok-feed">
+      <div class="tiktok-slide"><img src="foto1.jpg" alt=""></div>
+      <div class="tiktok-slide"><img src="foto2.jpg" alt=""></div>
+      <div class="tiktok-slide"><img src="foto3.jpg" alt=""></div>
+      <div class="tiktok-slide"><img src="foto4.jpg" alt=""></div>
+      <div class="tiktok-slide"><img src="foto5.jpg" alt=""></div>
+    </div>
+  </div>
+  <div class="tiktok-ui">
+  
+    <div class="tiktok-heart">♥</div>
+    <div class="tiktok-comment">💬</div>
+    <div class="tiktok-share">↗</div>
+  </div>
+  <button class="phone-btn prev" onclick="goToSlide(current - 1)">‹</button>
+  <button class="phone-btn next" onclick="goToSlide(current + 1)">›</button>
+</div>
+  <!-- icone stile tiktok -->
+   
+
+  <div class="tiktok-ui">
+    <div class="tiktok-heart">♥</div> 
+    <div class="tiktok-comment">💬</div>
+    <div class="tiktok-share">↗</div>
+  </div>
+</div>
+
+        <div class="stats-row">
+          <div class="stat-item fade-up">
+            <div class="num" data-val="5" data-suf="+">0</div>
+            <div class="lbl">Anni di<br>esperienza</div>
+          </div>
+          <div class="stat-item fade-up">
+            <div class="num" data-val="220" data-suf="k">0</div>
+            <div class="lbl">Followers<br>Instagram</div>
+          </div>
+          <div class="stat-item fade-up">
+            <div class="num" data-val="80" data-suf="+">0</div>
+            <div class="lbl">Brand<br>collaboration</div>
+          </div>
+          <div class="stat-item fade-up">
+            <div class="num" data-val="6" data-suf=".3M">0</div>
+            <div class="lbl">Video<br>più virale</div>
+          </div>
+        </div>
+      </div>
+      <div class="about-right">
+        <p class="about-body fade-up">Sono <strong>Aurora.</strong> <br> Nel 2020 ho aperto <strong>@dove_mangiamo_oggi</strong> una pagina Instagram in cui consiglio ristoranti e altre esperienze, con la semplicità di chi vuole condividere ciò che ama. <br> Oggi quella pagina conta <strong>oltre 220.000 </strong>persone che la seguono ogni giorno.</p>
+        <p class="about-body fade-up">Dietro ogni contenuto c'è un metodo, uno studio: <br> ascolto le analitiche, studio i trend, costruisco strategie. <br> L'autenticità non esclude la precisione... anzi, è la combinazione delle due che crea contenuti che davvero lasciano il <strong> segno.</p>
+        <blockquote class="about-quote fade-up">"Il sorriso è la mia firma...
+          <br> PAROLA D'ORDINE: <strong> Positività"</blockquote>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ KEY NUMBERS ═══ -->
+<section id="numbers">
+  <div class="container">
+    <div class="numbers-intro">
+      <div>
+        <div class="chapter-tag fade-up">Capitolo II — I numeri</div>
+        <h2 class="numbers-heading split-title fade-up">Numeri che<br>parlano<br>da <em>soli</em></h2>
+      </div>
+      <p class="numbers-sub fade-up">Ogni metrica racconta una scelta consapevole. <br>Analizzo i numeri con l'obiettivo di massimizzare i risultati e imparare da ciò che non ha funzionato.</p>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-cell fade-up">
+        <div class="kpi-val"><span class="kpi-counter" data-val="220" data-suf="k+">0</span></div>
+        <div class="kpi-label">Total Audience · Followers IG</div>
+      </div>
+      <div class="kpi-cell fade-up">
+        <div class="kpi-val"><span class="kpi-counter" data-val="6" data-suf=".3M+">0</span></div>
+        <div class="kpi-label">Highest Performing Video</div>
+      </div>
+      <div class="kpi-cell fade-up">
+        <div class="kpi-val"><span class="kpi-counter" data-val="1" data-suf="M+">0</span></div>
+        <div class="kpi-label">Multiple Videos Above 1M Views</div>
+      </div>
+      <div class="kpi-cell fade-up">
+        <div class="kpi-val"><span class="kpi-counter" data-val="7" data-suf="M">0</span></div>
+        <div class="kpi-label">Max Monthly Profile Views</div>
+      </div>
+      <div class="kpi-cell fade-up">
+        <div class="kpi-val"><span class="kpi-counter" data-val="70" data-suf="k">0</span></div>
+        <div class="kpi-label">Average Story Views (peak)</div>
+      </div>
+      <div class="kpi-cell fade-up">
+        <div class="kpi-val"><span class="kpi-counter" data-val="80" data-suf="+">0</span></div>
+        <div class="kpi-label">Brand Collaborations</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ SERVICES ═══ -->
+<section id="services">
+  <div class="container">
+    <div class="services-header fade-up">
+      <h2 class="services-heading">Cosa posso<br>fare per <em>te:</em></h2>
+      <p class="services-note">La creatività senza strategia è arte. <br>La strategia senza creatività è burocrazia.<br> Il mio obittivo è unirli per creare la Magia.</p>
+    </div>
+    <div class="services-list">
+      <div class="service-row"><span class="service-n">01</span><span class="service-name">Content Creation</span><span class="service-tag">Foto · Video · Reel</span></div>
+      <div class="service-row"><span class="service-n">02</span><span class="service-name">Digital Marketing</span><span class="service-tag">Strategy · Ads · Analytics</span></div>
+      <div class="service-row"><span class="service-n">03</span><span class="service-name">Social Media Manager</span><span class="service-tag">Planning · Community · Growth</span></div>
+      <div class="service-row"><span class="service-n">04</span><span class="service-name">Digital Consultant</span><span class="service-tag">Brand · Positioning · Roadmap</span></div>
+      <div class="service-row"><span class="service-n">05</span><span class="service-name">Logo & Graphic Design</span><span class="service-tag">Brand Identity · Visual</span></div>
+      <div class="service-row"><span class="service-n">06</span><span class="service-name">Video Editing</span><span class="service-tag">Reels · Storytelling · Motion</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ STORY ═══ -->
+<section id="story">
+  <div class="container">
+    <div class="chapter-tag fade-up">Capitolo IV — La mia Storia</div>
+    <h2 class="story-heading split-title fade-up">La mia<br><em>storia</em></h2>
+    <div class="timeline">
+      <div class="tl-item fade-up"><div class="tl-year">2020</div><div class="tl-line"></div><div class="tl-content"><div class="tl-title">Nasce @dove_mangiamo_oggi</div><p class="tl-body">Un account Instagram incentrato sul cibo, aperto molto a caso con il solo intento di consigliare alle persone dove mangiare. Nessun piano editoriale elaborato, nessuna pretesa... solo la volontà di raccontare la bellezza di una bella mangiata in compagnia dopo un periodo personale buio. </p></div></div>
+      <div class="tl-item fade-up"><div class="tl-year">2021</div><div class="tl-line"></div><div class="tl-content"><div class="tl-title">Prime Collaborazioni Brand</div><p class="tl-body">dove_mangiamo_oggi diventa il mio lavoro. I primi brand bussano alla porta: capisco che l'autenticità è la mia arma più potente, cosa che ancora oggi cerco di mantenere sempre</p></div></div>
+      <div class="tl-item fade-up"><div class="tl-year">2022</div><div class="tl-line"></div><div class="tl-content"><div class="tl-title">Il Primo Video Milionario</div><p class="tl-body">Con il tempo inizio a differenziare i contenuti sul mio profilo. Non più solo cibo e ristoranti, ma anche viaggi e tanto altro. Questo mi porta a raggiungere un pubblico sempre più ampio fino a... il mio primo video con oltre 1 milione di visualizzazioni in pochi giorni. Un grande traguardo per me. </p></div></div>
+      <div class="tl-item fade-up"><div class="tl-year">2023</div><div class="tl-line"></div><div class="tl-content"><div class="tl-title">Collaborazioni all'estero</div><p class="tl-body">Collaborazioni internazionali con ristoranti e hotel. Ho avuto l'opportunità di collaborare con realtà a Parigi, Osaka in Giappone e tante altre!</p></div></div>
+      <div class="tl-item fade-up"><div class="tl-year">2024</div><div class="tl-line"></div><div class="tl-content"><div class="tl-title">Oggi</div><p class="tl-body">Oggi la mia community conta più di 220.000 persone, il mio video più virale raggiunge 6.3 milioni di views, e ho avuto occasione negli anni di lavorare con Brand del calibro di McDonald's, Coca-Cola e la Guida Michelin. Oggi questo profilo per me è davvero importante ed è il posto in cui posso essere me stessa e raccontare la mia vita e le mie esperienze a persone che mi ascoltano ogni giorno.</p></div></div>
+      <div class="tl-item fade-up"><div class="tl-year">∞</div><div class="tl-line"></div><div class="tl-content"><div class="tl-title">Il Capitolo Più Bello</div><p class="tl-body">È ancora da scrivere... tante idee e nuovi format in arrivo... stay tuned!!!</p></div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ CLIENTS ═══ -->
+<section id="clients">
+  <div class="container">
+    <div class="chapter-tag fade-up">Capitolo V — I clienti</div>
+    <h2 class="clients-heading split-title fade-up">Brand che<br>hanno scelto<br><em>Aurora</em></h2>
+    <p class="clients-sub fade-up">Oltre 80 collaborazioni con realtà che credono nel potere delle storie autentiche. Dal food all'hospitality, dall'energia ai grandi marchi internazionali.</p>
+    <div class="clients-grid">
+      <div class="client-cell fade-up"><div class="client-name">McDonald's</div><div class="client-type">Food & Beverage</div></div>
+      <div class="client-cell fade-up"><div class="client-name">Coca-Cola Pizza Village</div><div class="client-type">Beverage · Events</div></div>
+      <div class="client-cell fade-up"><div class="client-name">Guida Michelin</div><div class="client-type">Fine Dining · Editorial</div></div>
+      <div class="client-cell fade-up"><div class="client-name">Hotel Portrait Milano</div><div class="client-type">Luxury Hospitality</div></div>
+      <div class="client-cell fade-up"><div class="client-name">Carpano</div><div class="client-type">Spirits & Lifestyle</div></div>
+      <div class="client-cell fade-up"><div class="client-name">Big Mama Group</div><div class="client-type">Restaurant Group</div></div>
+      <div class="client-cell fade-up"><div class="client-name">A2A</div><div class="client-type">Energy & Sustainability</div></div>
+      <div class="client-cell fade-up"><div class="client-name">+ 73 Brand & Ristoranti</div><div class="client-type">Italia · Giappone · Francia</div></div>
+    </div>
+    <p class="collab-note fade-up">Ognuno ha la propria storia da raccontare <br> <strong>IL MIO OBIETTIVO E' RACCONTARE AL MEGLIO LA TUA!</strong> 
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ PHILOSOPHY ═══ -->
+<section id="philosophy">
+  <div class="container">
+    <div class="phil-inner">
+      <div>
+        <div class="chapter-tag fade-up">Capitolo VI — Filosofia</div>
+        <h2 class="phil-heading split-title fade-up">Creatività e<br>dati non sono<br>opposti —<br>sono <em>complici</em></h2>
+        <div class="phil-pillars fade-up">
+          <div class="pillar"><span class="pillar-n">01</span><p class="pillar-text">Autenticità prima di tutto. Mostrarsi per quello che si è, con il sorriso e tanta energia.</p></div>
+          <div class="pillar"><span class="pillar-n">02</span><p class="pillar-text">I dati non mentono. Ogni contenuto viene analizzato, ottimizzato, migliorato </p></div>
+          <div class="pillar"><span class="pillar-n">03</span><p class="pillar-text">Cerco ogni giorno di creare interazione per mirare ad una Community felice e genuinamente coinvolta.</p></div>
+        </div>
+      </div>
+      <div class="phil-glass fade-up">
+        <p class="phil-quote">Credo che i Social siano uno strumento molto potente che può davverò fare la differenza per un'attività. Miro ad una comunicazione genuina, spontanea e positiva.</p>
+        <div class="phil-attr">— Aurora Limosani</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ CONTACT ═══ -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-inner">
+      <div>
+        <div class="chapter-tag fade-up">Capitolo VII — Parliamoci</div>
+        <h2 class="contact-heading split-title fade-up">Creiamo<br>qualcosa di<br><em>straordinario</em></h2>
+        <p class="contact-body fade-up">Hai un progetto, un'idea, una storia da raccontare? Sono qui. Ogni grande collaborazione inizia con una semplice conversazione.</p>
+      </div>
+      <div>
+        <div class="contact-detail fade-up"><div class="c-label">Instagram</div><a href="https://instagram.com/dove_mangiamo_oggi" class="c-link">@dove_mangiamo_oggi</a></div>
+        <div class="contact-detail fade-up"><div class="c-label">Email</div><a href="mailto:dove_mangiamo_oggi@icloud.com" class="c-link">dove_mangiamo_oggi@icloud.com</a></div>
+        <div class="social-row fade-up">
+          <a href="#" class="soc">Instagram</a>
+          <a href="#" class="soc">TikTok</a>
+          <a href="#" class="soc">LinkedIn</a>
+          <a href="#" class="soc">YouTube</a>
+        </div>
+        <div class="fade-up"><a href="mailto:dove_mangiamo_oggi@icloud.com" class="start-btn"><span class="dot"></span>Inizia una collaborazione</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>© 2026 Aurora Limosani</span>
+  <span>Portfolio Creativo</span>
+  
+</footer>
+
+<script>
+// ══════════════════════════════════════════════════
+// THREE.JS – VIVID CURSOR-REACTIVE FLUID BG
+// ══════════════════════════════════════════════════
+const canvas = document.getElementById('bg-canvas');
+const renderer = new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+renderer.setClearColor(0x000000,0);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,1.5));
+renderer.setSize(window.innerWidth,window.innerHeight);
+const scene = new THREE.Scene();
+const camera = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+
+const mouse = {x:.5,y:.5,tx:.5,ty:.5,vx:0,vy:0};
+let scrollProg = 0;
+
+const vert = `varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position,1.);}`;
+
+const frag = `
+precision highp float;
+varying vec2 vUv;
+uniform float uTime;
+uniform vec2  uMouse;   // 0..1 screen coords
+uniform vec2  uVelocity; // mouse velocity
+uniform float uScroll;
+
+// palette
+vec3 PAZ = vec3(.063,.427,.596);  // #106d98
+vec3 PVI = vec3(.639,.706,.859);  // #a3b4db
+vec3 PRO = vec3(.435,.608,.820);  // #6f9bd1
+vec3 PDE = vec3(.482,.369,.655);  // #7b5ea7 — non toccata, resta viola scuro, ok
+vec3 PCR = vec3(.980,.969,.961);  // cream — invariata
+vec3 PLI = vec3(.855,.800,.918);  // lilac — questa è ancora "rosata/lilla"
+
+float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float noise(vec2 p){
+  vec2 i=floor(p),f=fract(p),u=f*f*(3.-2.*f);
+  return mix(mix(hash(i),hash(i+vec2(1,0)),u.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),u.x),u.y);
+}
+float fbm(vec2 p){
+  float v=0.,a=.5;mat2 R=mat2(.8,.6,-.6,.8);
+  for(int i=0;i<5;i++){v+=a*noise(p);p=R*p*2.+vec2(1.7,9.2);a*=.46;}
+  return v;
+}
+
+void main(){
+  vec2 uv = vUv;
+  float t = uTime * 0.030; // base speed
+
+  // ── STRONG cursor distortion ──
+  vec2 m = uMouse;               // 0..1
+  float dist = length(uv - m);
+
+  // ripple warp: close to cursor = big warp
+  float ripple = exp(-dist*dist*3.5) * 0.55;
+  vec2 warpDir = normalize(uv - m + vec2(.001));
+  uv += warpDir * ripple * .12;
+
+  // velocity streak
+  float speed = length(uVelocity);
+  uv += uVelocity * exp(-dist*dist*5.) * 0.35;
+
+  // ── fbm flow ──
+  vec2 q = vec2(
+    fbm(uv*1.6 + vec2(t*.7,t*.3) + m*.5),
+    fbm(uv*1.6 + vec2(t*.4,t*.9) - m*.4)
+  );
+  vec2 r = vec2(
+    fbm(uv*2.0 + 4.*q + vec2(1.7,9.2) + t*.2),
+    fbm(uv*2.0 + 4.*q + vec2(8.3,2.8) - t*.18)
+  );
+  float f = fbm(uv*2.2 + 4.*r);
+
+  // ── scroll palette ──
+  float sc = uScroll;
+  vec3 c1,c2,c3;
+  if(sc<.2){float k=sc/.2;c1=mix(PAZ,PLI,k);c2=mix(PVI,PRO,k);c3=mix(PCR,PLI,k);}
+  else if(sc<.4){float k=(sc-.2)/.2;c1=mix(PLI,PRO,k);c2=mix(PRO,PDE*.9+.08,k);c3=mix(PLI,PAZ*.95,k);}
+  else if(sc<.6){float k=(sc-.4)/.2;c1=mix(PRO,PAZ,k);c2=mix(PAZ,PVI,k);c3=mix(PAZ*.95,PLI,k);}
+  else if(sc<.8){float k=(sc-.6)/.2;c1=mix(PAZ,PVI,k);c2=mix(PVI,PRO,k);c3=mix(PLI,PCR,k);}
+  else{float k=(sc-.8)/.2;c1=mix(PVI,PAZ,k);c2=mix(PRO,PLI,k);c3=mix(PCR,PLI,k);}
+
+  vec3 col = mix(mix(c3,c2,clamp(f*f*4.,0.,1.)),c1,clamp(f*2.-.3,0.,1.));
+
+  // ── cursor luminance burst ──
+  float glow = exp(-dist*dist*2.8) * .22;
+  col += glow * vec3(.18,.14,.22);
+
+  // ── velocity color heat ──
+  col += speed * exp(-dist*dist*4.) * vec3(.08,.04,.14);
+
+  // soft vignette
+  float vig = smoothstep(1.,.35,length(uv-.5)*1.15);
+  col = mix(col*.9,col,vig);
+
+  col = pow(clamp(col,0.,1.),vec3(1./1.1)); // gentle gamma lift
+  gl_FragColor = vec4(col,1.);
+}`;
+
+const mat = new THREE.ShaderMaterial({
+  vertexShader:vert, fragmentShader:frag,
+  uniforms:{
+    uTime:{value:0},
+    uMouse:{value:new THREE.Vector2(.5,.5)},
+    uVelocity:{value:new THREE.Vector2(0,0)},
+    uScroll:{value:0}
+  }
+});
+scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2),mat));
+
+const clock = new THREE.Clock();
+let lastMx=.5,lastMy=.5;
+(function loop(){
+  requestAnimationFrame(loop);
+  const t = clock.getElapsedTime();
+  mat.uniforms.uTime.value = t;
+
+  // smooth mouse lerp – faster for more reactivity
+  mouse.tx += (mouse.x - mouse.tx) * 0.07;
+  mouse.ty += (mouse.y - mouse.ty) * 0.07;
+
+  const vx = (mouse.tx - lastMx) * 60;
+  const vy = (mouse.ty - lastMy) * 60;
+  lastMx = mouse.tx; lastMy = mouse.ty;
+
+  mat.uniforms.uMouse.value.set(mouse.tx, mouse.ty);
+  mat.uniforms.uVelocity.value.set(vx, vy);
+  mat.uniforms.uScroll.value += (scrollProg - mat.uniforms.uScroll.value) * 0.02;
+  renderer.render(scene,camera);
+})();
+
+window.addEventListener('mousemove',e=>{
+  mouse.x = e.clientX / window.innerWidth;
+  mouse.y = 1 - e.clientY / window.innerHeight; // flip Y for GL
+});
+window.addEventListener('resize',()=>{ renderer.setSize(window.innerWidth,window.innerHeight); });
+
+// ══════════════════════════════════════════════════
+// LENIS
+// ══════════════════════════════════════════════════
+const lenis = new Lenis({
+  duration:1.6,
+  easing:t=>Math.min(1,1.001-Math.pow(2,-10*t)),
+  smoothWheel:true
+});
+lenis.on('scroll',({progress})=>{ scrollProg=progress; ScrollTrigger.update(); });
+(function raf(t){lenis.raf(t);requestAnimationFrame(raf);})(0);
+
+// ══════════════════════════════════════════════════
+// CURSOR
+// ══════════════════════════════════════════════════
+const cur = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+const blob = document.getElementById('cursor-blob');
+let cx=0,cy=0,rx=0,ry=0,bx=0,by=0;
+window.addEventListener('mousemove',e=>{cx=e.clientX;cy=e.clientY;});
+(function cl(){
+  requestAnimationFrame(cl);
+  rx+=(cx-rx)*.12; ry+=(cy-ry)*.12;
+  bx+=(cx-bx)*.05; by+=(cy-by)*.05;
+  cur.style.left=cx+'px'; cur.style.top=cy+'px';
+  ring.style.left=rx+'px'; ring.style.top=ry+'px';
+  blob.style.left=bx+'px'; blob.style.top=by+'px';
+})();
+document.querySelectorAll('a,button,.service-row,.client-cell,.kpi-cell,.role-pill').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{
+    cur.style.width=cur.style.height='22px';
+    ring.style.width=ring.style.height='64px';
+    ring.style.borderColor='rgba(123,94,167,.7)';
+  });
+  el.addEventListener('mouseleave',()=>{
+    cur.style.width=cur.style.height='12px';
+    ring.style.width=ring.style.height='40px';
+    ring.style.borderColor='rgba(123,94,167,.5)';
+  });
+});
+
+// nav scroll class
+window.addEventListener('scroll',()=>{
+  document.getElementById('main-nav').classList.toggle('scrolled',window.scrollY>60);
+},{passive:true});
+
+// ══════════════════════════════════════════════════
+// SPLITTING – caricato in modo sicuro
+// ══════════════════════════════════════════════════
+function initSplitting(){
+  if(typeof Splitting !== 'undefined'){
+    Splitting({by:'chars'});
+  } else {
+    setTimeout(initSplitting, 50);
+  }
+}
+initSplitting();
+
+// ══════════════════════════════════════════════════
+// GSAP
+// ══════════════════════════════════════════════════
+gsap.registerPlugin(ScrollTrigger);
+ScrollTrigger.scrollerProxy(document.body,{
+  scrollTop(v){if(arguments.length)lenis.scrollTo(v);return lenis.scroll;},
+  getBoundingClientRect(){return{top:0,left:0,width:window.innerWidth,height:window.innerHeight};}
+});
+
+// ── LOADER OUT ─────────────────────────────────────
+const loaderName = document.querySelector('.loader-name');
+gsap.to(loaderName,{opacity:1,y:0,duration:.8,delay:.2,ease:'power3.out'});
+gsap.to('#loader',{
+  opacity:0,duration:.7,delay:1.4,ease:'power2.inOut',
+  onComplete:()=>{
+    document.getElementById('loader').style.display='none';
+    // ── HERO ENTRANCE AFTER LOAD ──
+    const heroChars = document.querySelectorAll('#hero .split-title .char');
+    gsap.set(heroChars,{y:'115%',opacity:0});
+    gsap.to(heroChars,{y:'0%',opacity:1,duration:1.2,ease:'power4.out',stagger:.016,delay:.1});
+    gsap.to('.hero-eyebrow',{opacity:1,y:0,duration:1,delay:.05,ease:'power3.out'});
+    gsap.to('.hero-name',   {opacity:1,y:0,duration:1,delay:.75,ease:'power3.out'});
+    gsap.to('.hero-roles',  {opacity:1,y:0,duration:1,delay:.95,ease:'power3.out'});
+    gsap.to('.hero-cta',    {opacity:1,y:0,duration:1,delay:1.15,ease:'power3.out'});
+    gsap.to('.scroll-hint', {opacity:1,    duration:1.4,delay:1.8});
+  }
+});
+
+// ── HERO PARALLAX OUT ──────────────────────────────
+gsap.to('#hero .hero-title',{
+  y:-130,opacity:0,ease:'none',
+  scrollTrigger:{trigger:'#hero',start:'top top',end:'bottom top',scrub:1.4}
+});
+
+// ── SECTION REVEALS ────────────────────────────────
+document.querySelectorAll('.fade-up').forEach((el,i)=>{
+  if(el.classList.contains('split-title')&&el.closest('section:not(#hero)')){
+    const chars=el.querySelectorAll('.char');
+    gsap.set(chars,{y:'115%',opacity:0});
+    ScrollTrigger.create({
+      trigger:el,start:'top 87%',once:true,
+      onEnter:()=>gsap.to(chars,{y:'0%',opacity:1,duration:1,ease:'power4.out',stagger:.013})
+    });
+  } else {
+    gsap.set(el,{y:32,opacity:0});
+    ScrollTrigger.create({
+      trigger:el,start:'top 89%',once:true,
+      onEnter:()=>gsap.to(el,{y:0,opacity:1,duration:.85,ease:'power3.out',delay:(i%6)*.065})
+    });
+  }
+});
+
+// ── UNIVERSAL COUNTER FUNCTION ─────────────────────
+function animateCounter(el){
+  const val  = parseFloat(el.dataset.val);
+  const suf  = el.dataset.suf || '';
+  const dur  = 1.0; // fast!
+  gsap.to({v:0},{
+    v:val,duration:dur,ease:'power2.out',
+    onUpdate(){ el.textContent = Math.round(this.targets()[0].v) + suf; },
+    onComplete(){ el.textContent = val + suf; }
+  });
+}
+
+// About stats
+document.querySelectorAll('.stat-item .num').forEach(el=>{
+  ScrollTrigger.create({
+    trigger:el,start:'top 85%',once:true,
+    onEnter:()=>animateCounter(el)
+  });
+});
+
+// KPI counters
+document.querySelectorAll('.kpi-counter').forEach(el=>{
+  ScrollTrigger.create({
+    trigger:el,start:'top 85%',once:true,
+    onEnter:()=>animateCounter(el)
+  });
+});
+
+// ── SERVICES STAGGER ──────────────────────────────
+document.querySelectorAll('.service-row').forEach((row,i)=>{
+  gsap.set(row,{x:-30,opacity:0});
+  ScrollTrigger.create({
+    trigger:row,start:'top 90%',once:true,
+    onEnter:()=>gsap.to(row,{x:0,opacity:1,duration:.8,delay:i*.07,ease:'power3.out'})
+  });
+});
+
+// ── TIMELINE ITEMS ────────────────────────────────
+document.querySelectorAll('.tl-item').forEach((it,i)=>{
+  gsap.set(it,{x:-50,opacity:0});
+  ScrollTrigger.create({
+    trigger:it,start:'top 89%',once:true,
+    onEnter:()=>gsap.to(it,{x:0,opacity:1,duration:.9,delay:i*.09,ease:'power3.out'})
+  });
+});
+
+// ── CLIENT CELLS ──────────────────────────────────
+document.querySelectorAll('.client-cell').forEach((c,i)=>{
+  gsap.set(c,{y:28,opacity:0,scale:.97});
+  ScrollTrigger.create({
+    trigger:c,start:'top 90%',once:true,
+    onEnter:()=>gsap.to(c,{y:0,opacity:1,scale:1,duration:.75,delay:i*.055,ease:'power3.out'})
+  });
+});
+
+// ── KPI CELLS ENTRANCE ────────────────────────────
+document.querySelectorAll('.kpi-cell').forEach((c,i)=>{
+  gsap.set(c,{y:40,opacity:0});
+  ScrollTrigger.create({
+    trigger:c,start:'top 88%',once:true,
+    onEnter:()=>gsap.to(c,{y:0,opacity:1,duration:.8,delay:i*.06,ease:'power3.out'})
+  });
+});
+
+// ── PHILOSOPHY GLASS FLOAT ────────────────────────
+gsap.to('.phil-glass',{
+  y:-30,ease:'none',
+  scrollTrigger:{trigger:'#philosophy',start:'top bottom',end:'bottom top',scrub:2}
+});
+
+// ── PHONE TIKTOK ──────────────────────────────────
+const phoneTT = document.getElementById('phonetiktok');
+const feed = phoneTT.querySelector('.tiktok-feed');
+let current = 0;
+const total = 5;
+let ttInterval;
+
+function goToSlide(index) {
+  current = (index + total) % total;
+  feed.style.transform = `translateX(-${current * 196}px)`;
+}
+
+// auto scroll ogni 2 secondi quando si è sopra
+phoneTT.addEventListener('mouseenter', () => {
+  ttInterval = setInterval(() => {
+    goToSlide(current + 1);
+  }, 3000);
+});
+
+phoneTT.addEventListener('mouseleave', () => {
+  clearInterval(ttInterval);
+  goToSlide(0);
+});
+
+// scroll con rotellina sopra il telefono
+let isScrolling = false;
+
+phoneTT.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  if (isScrolling) return;
+  if (Math.abs(e.deltaX) < 20) return;
+  isScrolling = true;
+  if (e.deltaX > 0) goToSlide(current + 1);
+  else goToSlide(current - 1);
+  setTimeout(() => { isScrolling = false; }, 1200);
+}, { passive: false });
+
+// ── HORIZONTAL MARQUEE PAUSE ON HOVER ─────────────
+const mInner = document.querySelector('.marquee-inner');
+mInner.addEventListener('mouseenter',()=>mInner.style.animationPlayState='paused');
+mInner.addEventListener('mouseleave',()=>mInner.style.animationPlayState='running');
+</script>
+</body>
+</html>
