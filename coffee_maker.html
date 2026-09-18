@@ -1,0 +1,2203 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#F2ECE0">
+<title>Espresso Yourself — Portfolio Bar delle Competenze</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Playfair+Display:ital,wght@0,500;1,500&display=swap">
+
+<style>
+/* ═══════════════════════════════════════════════════════════
+   TOKEN — cambia qui i colori e cambia tutta la pagina
+   ═══════════════════════════════════════════════════════════ */
+:root{
+  --paper:#F2ECE0;      /* carta di fondo          */
+  --paper2:#E7DDC9;     /* carta scura / pannelli  */
+  --cream:#FAF6EE;      /* bianco caldo            */
+  --ink:#14110E;        /* inchiostro              */
+  --ink2:#443B31;       /* testo secondario        */
+  --ink3:#8B7F70;       /* testo terziario         */
+  --red:#B8342C;        /* rosso bar               */
+  --gold:#C39237;       /* ottone                  */
+  --gold2:#E3BC65;      /* ottone chiaro           */
+  --line:rgba(20,17,14,.14);
+  --line2:rgba(20,17,14,.07);
+  --pad:clamp(1.2rem,5vw,5rem);
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit;color:inherit;background:none;border:none;}
+canvas{display:block;}
+
+/* grana della carta */
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:60;opacity:.5;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+}
+
+/* ── CURSORE CUSTOM (solo desktop) ───────────────────────── */
+body.cur-on,body.cur-on a,body.cur-on button{cursor:none;}
+#cur{position:fixed;top:0;left:0;width:9px;height:9px;background:var(--red);border-radius:50%;
+  pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:multiply;display:none;}
+#curRing{position:fixed;top:0;left:0;width:34px;height:34px;border:1px solid var(--ink);border-radius:50%;
+  pointer-events:none;z-index:9998;transform:translate(-50%,-50%);display:none;
+  transition:width .28s ease,height .28s ease,border-color .28s ease;}
+body.cur-on #cur,body.cur-on #curRing{display:block;}
+body.cur-hot #curRing{width:50px;height:50px;border-color:var(--red);}
+
+/* ── HEADER ──────────────────────────────────────────────── */
+#head{
+  position:fixed;top:0;left:0;right:0;z-index:100;height:60px;
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:0 var(--pad);
+  border-bottom:1px solid var(--line);
+  background:rgba(242,236,224,.9);backdrop-filter:blur(14px);
+}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.45rem;letter-spacing:.12em;white-space:nowrap;}
+.logo i{font-style:normal;color:var(--red);}
+#head nav{display:flex;gap:clamp(.9rem,2.2vw,2.2rem);}
+#head nav a{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;
+  color:var(--ink3);transition:color .2s;white-space:nowrap;}
+#head nav a:hover{color:var(--ink);}
+.head-meta{font-size:.55rem;letter-spacing:.1em;color:var(--ink3);text-align:right;white-space:nowrap;}
+
+/* ── HERO ────────────────────────────────────────────────── */
+#hero{position:relative;min-height:100svh;padding-top:60px;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;}
+#heroCanvas{position:absolute;inset:0;width:100%;height:100%;}
+.hero-in{position:relative;z-index:2;text-align:center;padding:0 1.4rem;width:100%;pointer-events:none;}
+.hero-in a{pointer-events:auto;}
+.hero-eyebrow{font-size:.6rem;letter-spacing:.34em;text-transform:uppercase;color:var(--gold);margin-bottom:1.1rem;}
+.hero-t{font-family:'Bebas Neue',sans-serif;font-size:clamp(4rem,11vw,10rem);line-height:.86;letter-spacing:.03em;}
+.hero-t em{font-family:'Playfair Display',serif;font-style:italic;font-weight:500;font-size:.5em;
+  color:var(--red);display:block;letter-spacing:0;margin-top:.14em;}
+.hero-rule{width:52px;height:1px;background:var(--red);margin:1.6rem auto;}
+.hero-p{font-size:.72rem;line-height:2;color:var(--ink2);max-width:36ch;margin:0 auto;}
+.hero-cta{display:inline-block;margin-top:2.2rem;padding:.85rem 2.3rem;background:var(--ink);color:var(--paper);
+  text-decoration:none;font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;transition:background .25s;}
+.hero-cta:hover{background:var(--red);}
+.hero-scroll{position:absolute;bottom:1.8rem;left:50%;transform:translateX(-50%);z-index:2;
+  display:flex;flex-direction:column;align-items:center;gap:.5rem;font-size:.52rem;letter-spacing:.2em;color:var(--ink3);}
+.hero-scroll b{display:block;width:1px;height:44px;background:linear-gradient(var(--ink3),transparent);}
+
+/* ── TICKER ──────────────────────────────────────────────── */
+#ticker{background:var(--ink);overflow:hidden;padding:.5rem 0;position:relative;z-index:10;}
+.tick-in{display:flex;white-space:nowrap;width:max-content;animation:tick 36s linear infinite;}
+.tick-in span{font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;padding:0 2.2rem;
+  color:rgba(250,246,238,.6);flex-shrink:0;}
+.tick-in span b{color:var(--gold2);font-weight:400;}
+@keyframes tick{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+/* ── SEZIONI ─────────────────────────────────────────────── */
+section{padding:clamp(3.4rem,7vw,6.5rem) var(--pad);}
+.slab{font-size:.56rem;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);
+  display:flex;align-items:center;gap:.9rem;margin-bottom:.9rem;}
+.slab::before{content:'';width:22px;height:1px;background:var(--gold);flex:0 0 22px;}
+.stitle{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.4rem,5.4vw,4.6rem);line-height:.98;letter-spacing:.05em;}
+
+/* ── BANCONE ─────────────────────────────────────────────── */
+#bancone{background:var(--cream);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.ban-head{display:flex;justify-content:space-between;align-items:flex-end;gap:2rem;flex-wrap:wrap;margin-bottom:2.6rem;}
+.ban-head p{font-size:.7rem;line-height:1.9;color:var(--ink2);margin-top:1rem;max-width:40ch;}
+.ban-count{text-align:right;}
+.ban-count small{font-size:.55rem;letter-spacing:.16em;color:var(--ink3);text-transform:uppercase;}
+.ban-count b{font-family:'Bebas Neue',sans-serif;font-size:3.2rem;font-weight:400;display:block;line-height:1;}
+.ban-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);border:1px solid var(--line);}
+
+/* il pannello resta agganciato in alto mentre si scorre lo scaffale */
+/* z-index necessario: le schede vengono dopo nel DOM e senza
+   livello esplicito scorrerebbero SOPRA il pannello agganciato */
+.stage-panel{border-right:1px solid var(--line);background:var(--paper2);display:flex;flex-direction:column;
+  position:sticky;top:60px;align-self:start;z-index:5;}
+.stage-bar,.stage-foot{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.62rem .9rem;
+  font-size:.52rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink3);}
+.stage-bar{border-bottom:1px solid var(--line);}
+.stage-foot{border-top:1px solid var(--line);text-transform:none;letter-spacing:.06em;}
+.stage-bar b{font-weight:400;color:var(--red);font-variant-numeric:tabular-nums;}
+#stage{position:relative;height:clamp(340px,54vh,500px);touch-action:none;}
+#glc{width:100%;height:100%;}
+#load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;font-style:italic;color:var(--ink3);font-size:.85rem;pointer-events:none;}
+#hint{font-family:'Playfair Display',serif;font-style:italic;font-size:.74rem;color:var(--ink3);}
+.reset{border:1px solid var(--line);padding:.42rem 1rem;font-size:.54rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--ink3);cursor:pointer;flex:0 0 auto;
+  transition:background .2s,color .2s,border-color .2s;}
+.reset:hover{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+
+/* scaffale */
+.shelf{display:grid;grid-template-columns:1fr 1fr;background:var(--cream);}
+.prod{position:relative;border-right:1px solid var(--line);border-bottom:1px solid var(--line);
+  text-align:left;overflow:hidden;cursor:pointer;transition:background .25s;display:flex;flex-direction:column;}
+.prod:nth-child(2n){border-right:none;}
+.prod:hover{background:#fff;}
+.prod:focus-visible{outline:2px solid var(--red);outline-offset:-2px;}
+.prod::after{content:'';position:absolute;left:0;bottom:0;height:2px;width:0;background:var(--red);transition:width .38s ease;}
+.prod:hover::after{width:100%;}
+.prod-art{position:relative;height:104px;border-bottom:1px solid var(--line);background:var(--paper2);overflow:hidden;}
+.prod-art canvas{width:100%;height:100%;}
+.prod-tag{position:absolute;top:9px;left:9px;font-size:.46rem;letter-spacing:.16em;text-transform:uppercase;
+  background:var(--ink);color:var(--paper);padding:2px 6px;}
+.prod-tag.red{background:var(--red);}
+.prod-tag.gold{background:var(--gold);color:var(--ink);}
+.prod-qty{position:absolute;top:8px;right:8px;min-width:20px;height:20px;padding:0 5px;
+  display:flex;align-items:center;justify-content:center;background:var(--red);color:#fff;
+  font-size:.56rem;font-weight:600;opacity:0;font-variant-numeric:tabular-nums;}
+.prod-body{padding:.85rem .9rem 1rem;display:flex;flex-direction:column;flex:1;}
+.prod-code{font-size:.48rem;letter-spacing:.1em;color:var(--ink3);}
+.prod-name{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.05em;line-height:1.05;margin:.2rem 0 .12rem;}
+.prod-sub{font-size:.56rem;line-height:1.7;color:var(--ink2);min-height:2.7em;}
+.nutri{border-top:2px solid var(--ink);border-bottom:1px solid var(--ink);margin:.7rem 0 .55rem;padding:.3rem 0;}
+.nutri-h{font-family:'Bebas Neue',sans-serif;font-size:.8rem;letter-spacing:.07em;
+  border-bottom:1px solid var(--ink);padding-bottom:.18rem;margin-bottom:.28rem;}
+.nrow{display:flex;justify-content:space-between;gap:.6rem;font-size:.52rem;padding:1px 0;
+  border-bottom:.5px solid var(--line2);font-variant-numeric:tabular-nums;}
+.nrow:last-child{border-bottom:none;}
+.prod-bar{margin:.35rem 0 .5rem;}
+.prod-bar svg{width:100%;height:24px;color:var(--ink);}
+.prod-foot{display:flex;align-items:flex-end;justify-content:space-between;gap:.6rem;
+  border-top:1px solid var(--line);padding-top:.62rem;margin-top:auto;}
+.prod-price{font-family:'Bebas Neue',sans-serif;font-size:1.45rem;color:var(--red);letter-spacing:.03em;line-height:1;}
+.prod-unit{font-size:.47rem;color:var(--ink3);margin-top:1px;}
+.prod-add{width:34px;height:34px;flex:0 0 34px;border:1px solid var(--ink);
+  display:flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer;
+  transition:background .2s,color .2s,border-color .2s;}
+.prod-add:hover{background:var(--ink);color:var(--paper);}
+.prod-add.on{background:var(--red);border-color:var(--red);color:#fff;}
+
+/* ── MISCELE (portfolio) ─────────────────────────────────── */
+.mix-head{display:flex;justify-content:space-between;align-items:flex-end;gap:2rem;flex-wrap:wrap;margin-bottom:2.6rem;}
+.mix-head p{font-size:.7rem;line-height:1.9;color:var(--ink2);margin-top:1rem;max-width:42ch;}
+.mix-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));border:1px solid var(--line);border-bottom:none;}
+.mix{position:relative;text-align:left;padding:1.5rem 1.3rem 1.3rem;cursor:pointer;
+  border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--paper);
+  transition:background .3s,color .3s;display:flex;flex-direction:column;gap:.7rem;}
+.mix:last-child{border-right:none;}
+.mix:hover{background:var(--ink);color:var(--paper);}
+.mix:focus-visible{outline:2px solid var(--red);outline-offset:-2px;}
+.mix-n{font-family:'Bebas Neue',sans-serif;font-size:2.6rem;line-height:.9;color:var(--gold);letter-spacing:.04em;}
+.mix-name{font-family:'Bebas Neue',sans-serif;font-size:1.45rem;letter-spacing:.05em;line-height:1.05;}
+.mix-d{font-size:.58rem;line-height:1.85;color:var(--ink2);transition:color .3s;flex:1;}
+.mix:hover .mix-d{color:rgba(250,246,238,.62);}
+.mix-tags{display:flex;flex-wrap:wrap;gap:.3rem;}
+.mix-tags i{font-style:normal;font-size:.46rem;letter-spacing:.14em;text-transform:uppercase;
+  border:1px solid var(--line);padding:2px 6px;color:var(--ink3);transition:border-color .3s,color .3s;}
+.mix:hover .mix-tags i{border-color:rgba(250,246,238,.24);color:rgba(250,246,238,.6);}
+.mix-go{font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:var(--red);
+  border-top:1px solid var(--line);padding-top:.7rem;transition:color .3s,border-color .3s;}
+.mix:hover .mix-go{color:var(--gold2);border-color:rgba(250,246,238,.24);}
+
+/* ── SCONTRINO ───────────────────────────────────────────── */
+#conto{background:var(--ink);color:var(--paper);}
+#conto .slab{color:var(--gold);}
+#conto .slab::before{background:var(--gold);}
+.conto-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,320px);
+  gap:clamp(2rem,5vw,4rem);align-items:start;margin-top:2.4rem;}
+.conto-t{width:100%;border-collapse:collapse;}
+.conto-t th{font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3);
+  padding:.7rem 0;border-bottom:1px solid rgba(250,246,238,.13);text-align:left;font-weight:400;}
+.conto-t th:last-child,.conto-t td:last-child{text-align:right;}
+.conto-t td{padding:.8rem 0;border-bottom:1px solid rgba(250,246,238,.06);font-size:.65rem;vertical-align:middle;}
+.conto-t td:last-child{color:var(--gold2);font-weight:600;font-variant-numeric:tabular-nums;}
+.ct-name{color:var(--paper);}
+.ct-code{display:block;font-size:.48rem;color:var(--ink3);margin-top:2px;}
+.ct-empty{text-align:center;padding:3rem 1rem;color:rgba(250,246,238,.24);font-size:.65rem;letter-spacing:.14em;}
+.qctl{display:inline-flex;align-items:center;gap:.5rem;}
+.qb{width:24px;height:24px;border:1px solid rgba(250,246,238,.2);color:var(--paper);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:background .15s;}
+.qb:hover{background:rgba(250,246,238,.12);}
+.qn{min-width:18px;text-align:center;font-variant-numeric:tabular-nums;}
+.tot{border-top:1px solid rgba(250,246,238,.16);padding-top:1.4rem;}
+.tot-r{display:flex;justify-content:space-between;gap:1rem;font-size:.65rem;padding:.35rem 0;
+  color:rgba(250,246,238,.5);font-variant-numeric:tabular-nums;}
+.tot-r.big{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:.05em;color:var(--paper);
+  border-top:1px solid rgba(250,246,238,.2);margin-top:.7rem;padding-top:.7rem;}
+.tot-r.big span:last-child{color:var(--gold2);}
+.tot-note{font-size:.5rem;letter-spacing:.1em;color:var(--ink3);margin-top:1rem;line-height:1.9;}
+.tot-cta{display:block;width:100%;margin-top:1.4rem;padding:1rem;background:var(--red);color:#fff;cursor:pointer;
+  font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.26em;text-transform:uppercase;
+  transition:opacity .2s,transform .12s;}
+.tot-cta:hover{opacity:.88;}
+.tot-cta:active{transform:scale(.99);}
+
+/* ── FOOTER ──────────────────────────────────────────────── */
+footer{background:var(--paper2);border-top:1px solid var(--line);
+  padding:clamp(2.2rem,5vw,3.6rem) var(--pad);
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2.2rem;}
+.fc-t{font-size:.56rem;letter-spacing:.24em;text-transform:uppercase;color:var(--ink3);margin-bottom:1rem;}
+.fc p,.fc a{font-size:.62rem;line-height:2;color:var(--ink2);text-decoration:none;display:block;}
+.fc a:hover{color:var(--ink);}
+.fbot{background:var(--ink);color:rgba(250,246,238,.26);padding:1rem var(--pad);
+  display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;font-size:.5rem;letter-spacing:.1em;}
+
+/* ── MODALE ──────────────────────────────────────────────── */
+#ovl{position:fixed;inset:0;background:rgba(20,17,14,.62);backdrop-filter:blur(6px);z-index:1000;
+  display:none;align-items:center;justify-content:center;padding:1.2rem;}
+#ovl.open{display:flex;}
+#box{background:var(--cream);padding:clamp(1.6rem,4vw,2.6rem);max-width:440px;width:100%;position:relative;}
+#box h3{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.05em;line-height:1;}
+.box-x{position:absolute;top:1rem;right:1rem;font-size:1.1rem;color:var(--ink3);cursor:pointer;line-height:1;}
+.box-sub{color:var(--red);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;margin:.5rem 0 1.2rem;}
+.box-l{font-size:.58rem;line-height:1.9;color:var(--ink2);padding:.42rem 0;border-bottom:.5px dashed var(--line);}
+.box-f{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;margin-top:1.5rem;}
+.box-p{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;color:var(--red);line-height:1;}
+.box-go{font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;padding:.7rem 1.3rem;
+  background:var(--ink);color:var(--paper);text-decoration:none;}
+
+/* ── REVEAL ──────────────────────────────────────────────── */
+.rv{opacity:0;transform:translateY(26px);}
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+@media (max-width:960px){
+  .ban-grid{grid-template-columns:1fr;}
+  .stage-panel{border-right:none;border-bottom:1px solid var(--line);}
+  .conto-wrap{grid-template-columns:1fr;}
+  .mix{border-right:none;}
+}
+@media (max-width:560px){
+  #head{height:52px;}
+  .logo{font-size:1.1rem;}
+  .logo-tail{display:none;}          /* il nome per esteso non ci sta accanto al nav */
+  #head nav{gap:.85rem;}
+  #head nav a{font-size:.52rem;letter-spacing:.1em;}
+  .head-meta{display:none;}
+  #hero{padding-top:52px;align-items:flex-end;}
+  .hero-in{padding-bottom:4.5rem;}
+  .shelf{grid-template-columns:1fr;}
+  .prod{border-right:none;}
+  /* su telefono il bicchiere resta agganciato sotto l'header,
+     altrimenti si aggiunge una referenza senza vedere l'effetto */
+  .stage-panel{top:52px;box-shadow:0 12px 24px -18px rgba(20,17,14,.5);}
+  #stage{height:clamp(230px,34vh,300px);}
+  .conto-t th:nth-child(2),.conto-t td:nth-child(2){display:none;}
+  .tot-r.big{font-size:1.7rem;}
+}
+@media (prefers-reduced-motion:reduce){
+  .tick-in{animation:none;}
+  html{scroll-behavior:auto;}
+  .rv{opacity:1;transform:none;}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="curRing"></div>
+
+<!-- ══ HEADER ══════════════════════════════════════════════ -->
+<header id="head">
+  <div class="logo">CREATIVE <i>&#9733;</i> <span class="logo-tail">BAR</span></div>
+  <nav>
+    <a href="#bancone">Bancone</a>
+    <a href="#miscele">Profili</a>
+    <a href="#conto">Scontrino</a>
+  </nav>
+  <div class="head-meta" id="headMeta"></div>
+</header>
+
+<!-- ══ HERO ════════════════════════════════════════════════ -->
+<section id="hero">
+  <canvas id="heroCanvas"></canvas>
+  <div class="hero-in">
+    <div class="hero-eyebrow">Personal Branding &amp; Portfolio &mdash; Reparto Competenze</div>
+    <h1 class="hero-t">COMPONI<br><em>il tuo Caffè Creativo</em></h1>
+    <div class="hero-rule"></div>
+    <a href="#bancone" class="hero-cta">&rarr; Vai al bancone</a>
+  </div>
+  <div class="hero-scroll"><b></b>SCORRI</div>
+</section>
+
+<!-- ══ TICKER ══════════════════════════════════════════════ -->
+<div id="ticker" aria-hidden="true"><div class="tick-in" id="tickIn"></div></div>
+
+<!-- ══ BANCONE ═════════════════════════════════════════════ -->
+<section id="bancone">
+  <div class="ban-head rv">
+    <div>
+      <div class="slab">Reparto competenze &mdash; servizio al banco</div>
+      <h2 class="stitle">IL BANCONE</h2>
+      <p>Ogni competenza ha la sua grammatura. Clicca pi&ugrave; volte per aumentare la dose: il mix si costruisce nell&rsquo;ordine giusto, qualunque sia il tuo obiettivo.</p>
+    </div>
+    <div class="ban-count">
+      <small>Competenze a scaffale</small>
+      <b>07</b>
+    </div>
+  </div>
+
+  <div class="ban-grid rv">
+    <div class="stage-panel">
+      <div class="stage-bar">
+        <span>Fig. 01 &mdash; il mix, sezione</span>
+        <b id="fillPct">0% pieno</b>
+      </div>
+      <div id="stage">
+        <canvas id="glc"></canvas>
+        <div id="load">Preparo il vetro&hellip;</div>
+      </div>
+      <div class="stage-foot">
+        <span id="hint">Il bicchiere &egrave; vuoto</span>
+        <button class="reset" id="resetBtn" type="button">Svuota</button>
+      </div>
+    </div>
+    <div class="shelf" id="shelf"></div>
+  </div>
+</section>
+
+<!-- ══ MISCELE ═════════════════════════════════════════════ -->
+<section id="miscele">
+  <div class="mix-head rv">
+    <div>
+      <div class="slab">Kit di ruolo, gi&agrave; pronti</div>
+      <h2 class="stitle">I PROFILI</h2>
+      <p>Quattro profili gi&agrave; bilanciati. Scegline uno e il bancone lo compone da solo, competenza per competenza, sotto i tuoi occhi.</p>
+    </div>
+  </div>
+  <div class="mix-grid rv" id="mixGrid"></div>
+</section>
+
+<!-- ══ SCONTRINO ═══════════════════════════════════════════ -->
+<section id="conto">
+  <div class="rv">
+    <div class="slab">Riepilogo del profilo</div>
+    <h2 class="stitle">LO SCONTRINO</h2>
+  </div>
+  <div class="conto-wrap">
+    <table class="conto-t">
+      <thead>
+        <tr><th>Competenza</th><th>Codice</th><th>Dose</th><th>Valore</th></tr>
+      </thead>
+      <tbody id="contoBody">
+        <tr><td colspan="4" class="ct-empty">&mdash; nessuna competenza &middot; componi il tuo profilo al bancone &mdash;</td></tr>
+      </tbody>
+    </table>
+    <div>
+      <div class="tot">
+        <div class="tot-r"><span>Imponibile</span><span id="tSub">&euro; 0,00</span></div>
+        <div class="tot-r"><span>IVA 10%</span><span id="tIva">&euro; 0,00</span></div>
+        <div class="tot-r"><span>Grammatura</span><span id="tGram">0 g</span></div>
+        <div class="tot-r big"><span>TOTALE</span><span id="tTot">&euro; 0,00</span></div>
+      </div>
+      <p class="tot-note" id="totNote">Scontrino non fiscale. Profilo da mettere in pratica preferibilmente subito.</p>
+      <button class="tot-cta" id="printBtn" type="button">&#9654; Stampa lo scontrino</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══════════════════════════════════════════════ -->
+<footer id="foot">
+  <div class="fc rv">
+    <div class="fc-t">Espresso Yourself</div>
+    <p>Un bancone che funziona come un supermercato: scegli le competenze, controlla la grammatura, passa alla cassa.</p>
+  </div>
+  <div class="fc rv">
+    <div class="fc-t">Reparti</div>
+    <a href="#hero">Ingresso</a>
+    <a href="#bancone">Bancone</a>
+    <a href="#miscele">Profili</a>
+    <a href="#conto">Cassa</a>
+  </div>
+  <div class="fc rv">
+    <div class="fc-t">Disponibilit&agrave;</div>
+    <p>Luned&igrave; &ndash; Venerd&igrave; &middot; sempre reperibile<br>Nuovi progetti &middot; a partire da subito</p>
+  </div>
+</footer>
+<div class="fbot">
+  <span>&copy; Espresso Yourself &mdash; Portfolio Bar delle Competenze</span>
+  <span id="footMeta"></span>
+</div>
+
+<!-- ══ MODALE ══════════════════════════════════════════════ -->
+<div id="ovl">
+  <div id="box">
+    <button class="box-x" id="boxX" type="button" aria-label="Chiudi">&#10005;</button>
+    <div id="boxIn"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════════════
+   ICED COFFEE BUILDER
+   Tutto il comportamento della pagina sta qui sotto, diviso
+   in blocchi. Per personalizzare i prodotti basta cambiare
+   l'array REFERENZE; per le ricette, l'array MISCELE.
+   ═══════════════════════════════════════════════════════════ */
+(function () {
+'use strict';
+
+var REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (window.gsap && window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
+
+/* ── 1. DATI ─────────────────────────────────────────────── */
+var REFERENZE = [
+  { id:'ghiaccio', nome:'CONTENT CREATION', sub:'Idee tagliate nette, pensate per durare oltre il primo sguardo.',
+    tag:'Fondamenta', tagCls:'', codice:'8004530010017', prezzo:0.40, unita:'dose',
+    c1:0xBFE3EE, c2:0x7FB6C8, forma:'box', max:7,
+    nutri:[['Creatività','50 gr'],['Problem solving','10 gr'],['Costanza','8 h']] },
+
+  { id:'latte', nome:'COPYWRITING', sub:'Parole morbide che avvolgono il messaggio, senza mai annacquarlo.',
+    tag:'Più richiesto', tagCls:'red', codice:'8004530020024', prezzo:0.90, unita:'dose',
+    c1:0xF7EEDC, c2:0xDCC9A8, forma:'box', max:6,
+    nutri:[['Chiarezza','50 ml'],['Tono di voce','3,6 gr'],['Origine','Freelance']] },
+
+  { id:'caffe', nome:'STRATEGIA', sub:'Direzione concentrata, tostatura media, visione a corpo pieno.',
+    tag:'Core skill', tagCls:'gold', codice:'8004530030031', prezzo:1.20, unita:'dose',
+    c1:0x6B4226, c2:0x2E1A0E, forma:'cyl', max:6,
+    nutri:[['Visione','25 ml'],['Lucidità','65 mg'],['Focus','Medio-alto']] },
+
+  { id:'pistacchio', nome:'BRAND DESIGN', sub:'Identità densa e riconoscibile, pensata per restare impressa.',
+    tag:'Premium', tagCls:'gold', codice:'8004530040048', prezzo:2.10, unita:'dose',
+    c1:0xA8BE7C, c2:0x5E7038, forma:'cyl', max:4,
+    nutri:[['Coerenza visiva','30 gr'],['Riconoscibilità','42 %'],['Origine','Studio proprio']] },
+
+  { id:'nutella', nome:'SOCIAL MEDIA', sub:'Contenuti che scorrono lucidi, fatti per restare nel feed.',
+    tag:'', tagCls:'', codice:'8004530050055', prezzo:1.80, unita:'dose',
+    c1:0x7A4A2E, c2:0x33190D, forma:'cyl', max:4,
+    nutri:[['Engagement','30 gr'],['Costanza di posting','18 %'],['Community','13 %']] },
+
+  { id:'granella', nome:'PROBLEM SOLVING', sub:'Soluzioni piccole e irregolari, che fanno la differenza dove servono.',
+    tag:'Croccante', tagCls:'', codice:'8004530060062', prezzo:1.10, unita:'dose',
+    c1:0xC79A63, c2:0x7A4E24, forma:'box', max:8,
+    nutri:[['Grammatura','15 gr'],['Precisione','2–4 mm'],['Sotto pressione','Forte']] },
+
+  { id:'schiuma', nome:'PUBLIC SPEAKING', sub:'Presenza leggera ma stabile, capace di reggere la scena.',
+    tag:'Nuovo', tagCls:'red', codice:'8004530070079', prezzo:0.80, unita:'dose',
+    c1:0xFBF6EC, c2:0xE0D4BE, forma:'cyl', max:5,
+    nutri:[['Chiarezza espositiva','20 gr'],['Tenuta sul palco','8 min'],['Sicurezza','Fine']] }
+];
+
+var MISCELE = [
+  { n:'01', nome:'SOCIAL MEDIA MANAGER', tags:['Social Media','Problem Solving','Content Creation'],
+    d:'Il profilo più richiesto. Social sul fondo, strategia che scende lenta, problem solving a chiudere.',
+    ric:{ nutella:2, caffe:2, latte:2, granella:2, ghiaccio:2 } },
+  { n:'02', nome:'BRAND DESIGNER', tags:['Brand Design','Copywriting','Public Speaking'],
+    d:'Più visivo e più curato. Il brand design resta la base, il public speaking corona il profilo.',
+    ric:{ pistacchio:2, latte:3, caffe:1, ghiaccio:2, schiuma:2 } },
+  { n:'03', nome:'CREATIVE DIRECTOR', tags:['Strategia','Content Creation'],
+    d:'Nessuna concessione. Tre dosi di strategia, content creation abbondante, un velo di public speaking.',
+    ric:{ caffe:3, ghiaccio:3, schiuma:1 } },
+  { n:'04', nome:'MARKETER A TUTTO TONDO', tags:['Brand Design','Social Media','Public Speaking'],
+    d:'Tutte le competenze insieme, legate dal copywriting. Il profilo più completo del listino.',
+    ric:{ nutella:1, pistacchio:1, latte:3, caffe:1, schiuma:2, granella:1 } }
+];
+
+var GRAMMI = { ghiaccio:60, latte:50, caffe:25, pistacchio:30, nutella:30, granella:15, schiuma:20 };
+var byId = {}; REFERENZE.forEach(function (r) { byId[r.id] = r; });
+
+/* stato del bicchiere: quante dosi per referenza */
+var stato = {};
+REFERENZE.forEach(function (r) { stato[r.id] = 0; });
+
+/* ── 2. ETICHETTE (canvas 2D) ────────────────────────────
+   La stessa funzione disegna l'etichetta usata sia come
+   texture dei pacchi 3D dell'hero, sia come artwork 2D
+   delle schede prodotto. È qui che nasce l'aspetto
+   "packaging" — grafica piatta e precisa, non finta foto. */
+function hex(n) { return '#' + n.toString(16).padStart(6, '0'); }
+
+/* IMPORTANTE — gestione colore.
+   Il renderer lavora in spazio lineare e converte in sRGB solo
+   in uscita (outputEncoding). Un colore preso da un valore esa
+   di design è però GIÀ in sRGB: passandolo così com'è viene
+   interpretato come lineare e riconvertito, uscendo molto più
+   chiaro del previsto (il caffè diventava crema). Ogni colore
+   di materiale va quindi convertito qui una volta sola.        */
+function col(n) { return new THREE.Color(n).convertSRGBToLinear(); }
+function tinta(mat, n) { mat.color.setHex(n).convertSRGBToLinear(); }
+
+/* ── PITTURA DELLA BEVANDA ───────────────────────────────────
+   La texture del misto: sfumatura verticale (caffe' sopra,
+   latte sotto) piu' le colate accumulate dalle versate.
+   Ridipinta solo quando cambia il rapporto latte/caffe, non a
+   ogni fotogramma.                                            */
+var COLATE = [];                       /* {x,y,r,col,squash,rot} */
+
+function mescolaHex(a, b, q) {
+  var ar = a >> 16 & 255, ag = a >> 8 & 255, ab = a & 255;
+  var br = b >> 16 & 255, bg = b >> 8 & 255, bb = b & 255;
+  return 'rgb(' + Math.round(ar + (br - ar) * q) + ',' +
+                  Math.round(ag + (bg - ag) * q) + ',' +
+                  Math.round(ab + (bb - ab) * q) + ')';
+}
+
+function ridipingiMisto() {
+  var x = G.ctxMisto, W = 256, H = 256;
+  var l = stato.latte, c = stato.caffe, t = l + c;
+  var q = t ? c / t : 0;
+  /* il caffe' scurisce presto: la prima dose si vede molto piu'
+     della quarta, come nella realta' */
+  var forza = 1 - Math.pow(1 - q, 1.35);
+
+  var chiaro = 0xF6ECD8, scuro = 0x3A2011;
+  x.globalAlpha = 1; x.globalCompositeOperation = 'source-over';
+  var g = x.createLinearGradient(0, 0, 0, H);
+  /* V va da 1 in cima a 0 in basso sul cilindro: la parte alta
+     della tela e' il pelo del liquido */
+  g.addColorStop(0.00, mescolaHex(chiaro, scuro, Math.min(forza * 1.15, 1)));
+  g.addColorStop(0.42, mescolaHex(chiaro, scuro, forza * 0.82));
+  g.addColorStop(1.00, mescolaHex(chiaro, scuro, forza * 0.42));
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+
+  COLATE.forEach(function (b) {
+    var rg = x.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
+    rg.addColorStop(0, b.col); rg.addColorStop(1, 'rgba(0,0,0,0)');
+    x.globalAlpha = b.a;
+    x.save(); x.translate(b.x, b.y); x.rotate(b.rot); x.scale(1, b.squash);
+    x.translate(-b.x, -b.y);
+    x.fillStyle = rg;
+    x.beginPath(); x.arc(b.x, b.y, b.r, 0, 6.2832); x.fill();
+    x.restore();
+  });
+  x.globalAlpha = 1;
+  if (G.texMisto) G.texMisto.needsUpdate = true;
+
+  /* il pelo prende il tono piu' scuro della sfumatura: e' la
+     faccia da cui il caffe' e' appena entrato */
+  if (G.matPelo) {
+    var s = mescolaHex(chiaro, scuro, Math.min(forza * 1.15, 1));
+    var n = s.match(/\d+/g);
+    G.matPelo.color.setRGB(n[0] / 255, n[1] / 255, n[2] / 255).convertSRGBToLinear();
+  }
+}
+
+/* una colata: la versata lascia una scia verticale, non una
+   macchia tonda — per questo la schiaccio sull'asse Y */
+function colata(colHex, scura) {
+  COLATE.push({
+    x: Math.random() * 256,
+    y: Math.random() * 150,                 /* nascono in alto */
+    r: 38 + Math.random() * 46,
+    col: colHex,
+    a: 0.30 + Math.random() * 0.22,
+    squash: 1.7 + Math.random() * 1.5,      /* allungata in verticale */
+    rot: (Math.random() - 0.5) * 0.5
+  });
+  if (COLATE.length > 14) COLATE.shift();
+  ridipingiMisto();
+}
+
+function disegnaEtichetta(ctx, r, W, H) {
+  var g = ctx.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, hex(r.c1)); g.addColorStop(1, hex(r.c2));
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+
+  var scuro = ((r.c1 >> 16 & 255) * 0.299 + (r.c1 >> 8 & 255) * 0.587 + (r.c1 & 255) * 0.114) < 150;
+  var inch = scuro ? 'rgba(255,255,255,' : 'rgba(20,17,14,';
+
+  /* fascia centrale */
+  ctx.fillStyle = inch + '.10)';
+  ctx.fillRect(0, H * 0.30, W, H * 0.34);
+
+  /* nome — le nuove referenze (discipline creative) hanno nomi
+     più lunghi dei vecchi ("PUBLIC SPEAKING" vs "LATTE"), quindi
+     il carattere si restringe finché non entra nella fascia */
+  ctx.textAlign = 'center';
+  ctx.fillStyle = inch + '.96)';
+  var fsz = Math.round(H * 0.13), maxW = W * 0.86;
+  ctx.font = '700 ' + fsz + 'px "IBM Plex Mono",monospace';
+  while (ctx.measureText(r.nome).width > maxW && fsz > H * 0.06) {
+  fsz -= 2;
+  ctx.font = '700 ' + fsz + 'px "IBM Plex Mono",monospace';
+}
+ctx.fillText(r.nome, W / 2, H * 0.45);
+
+  ctx.fillStyle = inch + '.55)';
+  ctx.font = Math.round(H * 0.055) + 'px "IBM Plex Mono",monospace';
+  ctx.fillText(r.nutri[0][1] + '  ·  ' + r.unita.toUpperCase(), W / 2, H * 0.545);
+
+  /* fascia ottone */
+  ctx.fillStyle = 'rgba(195,146,55,.94)';
+  ctx.fillRect(0, H * 0.66, W, H * 0.095);
+  ctx.fillStyle = '#14110E';
+  ctx.font = '700 ' + Math.round(H * 0.05) + 'px "IBM Plex Mono",monospace';
+  ctx.fillText('QUALITÀ GARANTITA', W / 2, H * 0.728);
+
+  /* codice a barre */
+  var bx = W * 0.16, by = H * 0.80, bh = H * 0.11, s = 0;
+  ctx.fillStyle = inch + '.72)';
+  for (var i = 0; i < 42 && bx < W * 0.84; i++) {
+    s = (i * 37 + r.codice.charCodeAt(i % r.codice.length) * 11) % 7;
+    var w = (s % 3 + 1) * (W / 260);
+    if (s % 3 !== 1) ctx.fillRect(bx, by, w, bh);
+    bx += w + W / 200;
+  }
+  ctx.fillStyle = inch + '.45)';
+  ctx.font = Math.round(H * 0.042) + 'px "IBM Plex Mono",monospace';
+  ctx.fillText(r.codice, W / 2, H * 0.955);
+
+  /* cornice */
+  ctx.strokeStyle = inch + '.28)';
+  ctx.lineWidth = Math.max(2, W / 170);
+  ctx.strokeRect(ctx.lineWidth, ctx.lineWidth, W - ctx.lineWidth * 2, H - ctx.lineWidth * 2);
+}
+
+function texEtichetta(r, size) {
+  var c = document.createElement('canvas');
+  c.width = size; c.height = size;
+  disegnaEtichetta(c.getContext('2d'), r, size, size);
+  var t = new THREE.CanvasTexture(c);
+  t.encoding = THREE.sRGBEncoding;
+  t.anisotropy = 4;
+  return t;
+}
+
+/* ── 3. CODICE A BARRE SVG (schede) ──────────────────────── */
+function barcodeSVG(codice) {
+  var out = '', x = 2, i, s, w;
+  for (i = 0; i < 70 && x < 158; i++) {
+    s = (i * 31 + codice.charCodeAt(i % codice.length) * 7) % 9;
+    w = (s % 3 + 1) * 1.1;
+    if (s % 3 !== 1) out += '<rect x="' + x.toFixed(1) + '" y="0" width="' + w.toFixed(1) + '" height="24" fill="currentColor"/>';
+    x += w + 0.9;
+  }
+  return '<svg viewBox="0 0 160 24" preserveAspectRatio="none" aria-hidden="true">' + out + '</svg>';
+}
+
+/* ── 4. SCENA HERO — lo scaffale 3D ──────────────────────── */
+function scenaHero() {
+  var cv = document.getElementById('heroCanvas');
+  var ren = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true });
+  ren.setPixelRatio(Math.min(devicePixelRatio, 2));
+  ren.outputEncoding = THREE.sRGBEncoding;
+  ren.toneMapping = THREE.ACESFilmicToneMapping;
+  ren.toneMappingExposure = 1.05;
+
+  var sc = new THREE.Scene();
+  var cam = new THREE.PerspectiveCamera(46, 1, 0.1, 120);
+  cam.position.set(0, 0, 15);
+
+  sc.add(new THREE.AmbientLight(0xfff4e2, 0.72));
+  var k = new THREE.DirectionalLight(0xfff6e6, 1.15); k.position.set(6, 9, 8); sc.add(k);
+  var f = new THREE.DirectionalLight(0xC39237, 0.34); f.position.set(-7, -3, -5); sc.add(f);
+
+  /* I pacchi stanno ai lati e dietro, non dietro al titolo:
+     due colonne laterali più una fila bassa. Così il testo
+     resta leggibile e loro fanno da quinte.                  */
+  var pacchi = [];
+  var POSTI = [
+    [-7.6,  2.9, -2.5], [-6.2, -2.3, -1.0],
+    [ 7.6,  2.9, -2.5], [ 6.2, -2.3, -1.0],
+    [-3.5, -4.8, -1.4], [ 0.0, -5.1, -2.4], [ 3.5, -4.8, -1.4]
+  ];
+  REFERENZE.forEach(function (r, idx) {
+    var geo;
+    if (r.forma === 'cyl') geo = new THREE.CylinderGeometry(0.88, 0.88, 2.5, 40);
+    else geo = new THREE.BoxGeometry(1.68, 2.5, 0.82);
+
+    var mat = new THREE.MeshStandardMaterial({
+      map: texEtichetta(r, 512), roughness: 0.44, metalness: 0.05,
+      transparent: true, opacity: 0.62
+    });
+    var m = new THREE.Mesh(geo, mat);
+    var p = POSTI[idx];
+    m.position.set(p[0], p[1], p[2]);
+    m.rotation.y = p[0] * -0.05;
+    m.userData.fase = idx * 0.85;
+    m.userData.y0 = p[1];
+    sc.add(m); pacchi.push(m);
+  });
+
+  var mx = 0, my = 0;
+  if (!('ontouchstart' in window)) {
+    addEventListener('mousemove', function (e) {
+      mx = (e.clientX / innerWidth - 0.5) * 2;
+      my = (e.clientY / innerHeight - 0.5) * 2;
+    }, { passive: true });
+  }
+
+  function resize() {
+    var w = cv.clientWidth, h = cv.clientHeight;
+    if (!w || !h) return;
+    ren.setSize(w, h, false);
+    cam.aspect = w / h; cam.updateProjectionMatrix();
+  }
+  addEventListener('resize', resize); resize();
+
+  var t = 0;
+  (function loop() {
+    requestAnimationFrame(loop);
+    t += REDUCED ? 0 : 0.009;
+    pacchi.forEach(function (m, i) {
+      m.rotation.y += REDUCED ? 0 : 0.0055 + mx * 0.004 * (i % 2 ? -1 : 1);
+      m.position.y = m.userData.y0 + Math.sin(t * 0.7 + m.userData.fase) * 0.16;
+      m.rotation.x = Math.sin(t * 0.45 + m.userData.fase) * 0.05;
+    });
+    cam.position.x += (mx * 1.1 - cam.position.x) * 0.05;
+    cam.position.y += (-my * 0.6 - cam.position.y) * 0.05;
+    cam.lookAt(0, -0.3, 0);
+    ren.render(sc, cam);
+  })();
+}
+
+/* ── 5. SCENA BANCONE — il bicchiere ─────────────────────
+   Il vetro è generato con una LatheGeometry da un profilo
+   tecnico (niente modelli esterni): controllo esatto di
+   spessore, raccordi e rastremazione. */
+var G = {};                       /* riferimenti alla scena */
+var R_INT = 0.55;                 /* raggio interno liquidi */
+var Y_FONDO = 0.17, Y_ORLO = 2.42;
+var CORSA = Y_ORLO - Y_FONDO;
+var ghiaccioEls = [], granellaEls = [], bolleEls = [];
+
+/* ── GRANELLA A ISTANZE ──────────────────────────────────────
+   Fino a 150 granelli erano 150 mesh separate: da sole facevano
+   un centinaio delle ~137 draw call della scena, per dei pezzi
+   da 2 mm. Con un InstancedMesh diventano UNA draw call sola —
+   la geometria e' identica per tutti, cambia solo la matrice.
+   I granelli restano normali Object3D tenuti fuori dalla scena,
+   cosi' GSAP continua ad animarne position/rotation/scale
+   esattamente come prima, e a ogni fotogramma ne ricopio le
+   matrici dentro l'istanza. La varieta' di forma la do con
+   scala non uniforme e rotazione: a quella dimensione la
+   sagoma del singolo granello non si distingue comunque.     */
+var MAX_GRAN = 200;
+var granelliVivi = [];      /* disegnati ora, compresi quelli in volo */
+
+function profiloBicchiere() {
+  /* (raggio, altezza) — sezione del vetro, dal centro del
+     fondo, su per la parete esterna, sopra l'orlo e giù
+     dentro fino al centro del fondo interno.                */
+  return [
+    [0.00, 0.00], [0.54, 0.00], [0.585, 0.05], [0.60, 0.14],
+    [0.635, 1.30], [0.665, 2.44], [0.663, 2.50], [0.612, 2.50],
+    [0.606, 2.42], [0.578, 1.28], [0.556, 0.22], [0.50, 0.155],
+    [0.00, 0.15]
+  ].map(function (p) { return new THREE.Vector2(p[0], p[1]); });
+}
+
+function geoCubetto(seme) {
+  /* Cubetto vero: facce piatte e spigoli smussati, non un
+     cristallo sfaccettato. Tanti segmenti + spinta leggera
+     verso la sfera arrotondano solo gli angoli; una micro
+     ondulazione deterministica (niente random puro, che
+     "spinava" la superficie) dà l'irregolarità del ghiaccio
+     che si è sciolto un po'. Normali morbide, non flat.     */
+  var g = new THREE.BoxGeometry(1, 1, 1, 6, 6, 6);
+  var p = g.attributes.position, v = new THREE.Vector3(), n = new THREE.Vector3();
+  var s = seme * 2.7 + 1.3;
+  for (var i = 0; i < p.count; i++) {
+    v.fromBufferAttribute(p, i);
+    n.copy(v).normalize();
+    v.lerp(n.clone().multiplyScalar(0.63), 0.34);          /* smusso degli spigoli */
+    var w = 0.020 * Math.sin(v.x * 9.1 + s) * Math.cos(v.y * 7.3 - s)
+          + 0.014 * Math.sin(v.z * 11.7 + s * 1.7);
+    v.addScaledVector(n, w);
+    p.setXYZ(i, v.x, v.y, v.z);
+  }
+  g.computeVertexNormals();
+  return g;
+}
+
+function geoScaglia() {
+  var g = new THREE.TetrahedronGeometry(0.5, 0);
+  var p = g.attributes.position, v = new THREE.Vector3();
+  for (var i = 0; i < p.count; i++) {
+    v.fromBufferAttribute(p, i);
+    v.multiplyScalar(0.75 + Math.random() * 0.5);
+    p.setXYZ(i, v.x, v.y * 0.6, v.z);
+  }
+  g.computeVertexNormals();
+  return g;
+}
+
+/* cupola della schiuma: mezza sfera con perno alla base e
+   dorso appena irregolare, come una crema montata assestata */
+function geoCupola() {
+  var g = new THREE.SphereGeometry(1, 46, 14, 0, Math.PI * 2, 0, Math.PI / 2);
+  var p = g.attributes.position, v = new THREE.Vector3();
+  for (var i = 0; i < p.count; i++) {
+    v.fromBufferAttribute(p, i);
+    var gonf = 1 + 0.035 * Math.sin(v.x * 7.3) * Math.cos(v.z * 6.1)
+                 + 0.022 * Math.sin(v.z * 10.4 + 1.7);
+    p.setXYZ(i, v.x * gonf, v.y * gonf, v.z * gonf);
+  }
+  g.computeVertexNormals();
+  return g;
+}
+
+function cilindroBase(r) {
+  var g = new THREE.CylinderGeometry(r, r, 1, 48, 1, false);
+  g.translate(0, 0.5, 0);                                  /* perno sul fondo */
+  return g;
+}
+
+function scenaBancone() {
+  var cv = document.getElementById('glc');
+  var host = document.getElementById('stage');
+  var ren = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true });
+  ren.setPixelRatio(Math.min(devicePixelRatio, 2));
+  ren.outputEncoding = THREE.sRGBEncoding;
+  ren.toneMapping = THREE.ACESFilmicToneMapping;
+  ren.toneMappingExposure = 0.94;
+  ren.shadowMap.enabled = true;
+  ren.shadowMap.type = THREE.PCFSoftShadowMap;
+
+  var sc = new THREE.Scene();
+  var cam = new THREE.PerspectiveCamera(30, 1, 0.1, 60);
+  var MIRA = new THREE.Vector3(0, 1.22, 0);
+  /* direzione di ripresa fissa; la distanza la calcola inquadra() */
+  var DIR = new THREE.Vector3(0.34, 0.30, 1).normalize();
+  var CAM0 = new THREE.Vector3();
+
+  /* Inquadra il bicchiere qualunque sia la forma del riquadro:
+     calcola la distanza necessaria sia in verticale che in
+     orizzontale e tiene la maggiore, così su pannelli stretti
+     e alti la camera arretra invece di finire dentro al vetro. */
+  function inquadra() {
+    var ALT = 3.5, LAR = 1.9;                       /* ingombro da contenere */
+    var v = cam.fov * Math.PI / 180;
+    var dV = (ALT / 2) / Math.tan(v / 2);
+    var dO = (LAR / 2) / Math.tan(v / 2) / Math.max(cam.aspect, 0.0001);
+    var d = Math.max(dV, dO) * 1.04;
+    CAM0.copy(DIR).multiplyScalar(d).add(MIRA);
+    cam.position.copy(CAM0);
+  }
+
+  /* fondale: sweep da studio, tinta unita in alto → carta in basso */
+  var bg = document.createElement('canvas'); bg.width = 8; bg.height = 256;
+  var bx = bg.getContext('2d');
+  var bgr = bx.createLinearGradient(0, 0, 0, 256);
+  bgr.addColorStop(0, '#EFE7D8'); bgr.addColorStop(0.62, '#E7DDC9'); bgr.addColorStop(1, '#D8CBB2');
+  bx.fillStyle = bgr; bx.fillRect(0, 0, 8, 256);
+  var bgt = new THREE.CanvasTexture(bg); bgt.encoding = THREE.sRGBEncoding;
+  sc.background = bgt;
+
+  /* AMBIENTE DA STUDIO — è questo che fa leggere ghiaccio e
+     vetro. Senza una mappa da riflettere, clearcoat e
+     roughness non producono nulla e i cubetti sembrano gesso:
+     bianchi, piatti, senza spigoli. Qui costruisco al volo una
+     equirettangolare che imita un set fotografico (softbox
+     chiaro in alto, piano scuro in basso) e la passo al
+     PMREMGenerator. I riflessi che ne derivano disegnano i
+     bordi dei cubetti e la parete del bicchiere.            */
+  (function ambienteStudio() {
+    var c = document.createElement('canvas'); c.width = 1024; c.height = 512;
+    var x = c.getContext('2d');
+
+    /* Set fotografico vero, non una stanza bianca. Prima
+       l'ambiente era chiaro dappertutto: ogni superficie lucida
+       lo rispecchiava e la bevanda usciva slavata — col pelo
+       messo a nero puro rendeva comunque grigio chiaro. Un
+       fotografo di still life fa l'opposto: fondo scuro e due
+       o tre softbox stretti. Il nero e' quello che da' corpo al
+       liquido e stacca gli spigoli del ghiaccio; le strisce
+       chiare sono i colpi di luce sul vetro.                  */
+    var g = x.createLinearGradient(0, 0, 0, 512);
+    g.addColorStop(0.00, '#cfc7ba');      /* soffitto: rimbalzo tenue */
+    g.addColorStop(0.34, '#6d665c');
+    g.addColorStop(0.52, '#2b2722');      /* orizzonte scuro = contrasto */
+    g.addColorStop(1.00, '#191714');      /* pavimento scuro */
+    x.fillStyle = g; x.fillRect(0, 0, 1024, 512);
+
+    /* softbox morbido: striscia a bordi sfumati (fa il volume di luce) */
+    function softbox(cx, cy, w, h, forza) {
+      var s = x.createRadialGradient(cx, cy, 0, cx, cy, Math.max(w, h));
+      s.addColorStop(0, 'rgba(255,252,245,' + forza + ')');
+      s.addColorStop(0.55, 'rgba(255,250,240,' + (forza * 0.42) + ')');
+      s.addColorStop(1, 'rgba(255,250,240,0)');
+      x.save(); x.translate(cx, cy); x.scale(w / Math.max(w, h), h / Math.max(w, h));
+      x.translate(-cx, -cy);
+      x.fillStyle = s; x.beginPath(); x.arc(cx, cy, Math.max(w, h), 0, 6.2832); x.fill();
+      x.restore();
+    }
+    /* softbox "duro": bordo netto (solo un filo di feather) invece
+       che una nuvola gaussiana. È quello che disegna i riquadri di
+       luce netti che si vedono nei riflessi delle foto di prodotto
+       vere — senza questo, ogni riflesso su vetro e ghiaccio resta
+       un alone morbido e si legge subito come CG.                */
+    function softboxDuro(x0, y0, w, h, forza, feather) {
+      var cx = x0 + w / 2, cy = y0 + h / 2;
+      x.save();
+      x.filter = 'blur(' + feather + 'px)';
+      x.fillStyle = 'rgba(255,253,248,' + forza + ')';
+      x.fillRect(x0, y0, w, h);
+      x.restore();
+    }
+    softbox(192, 148, 108, 192, 1.0);         /* key, alta e stretta */
+    softbox(660, 120, 180, 108, 0.55);        /* fill, piu' larga e debole */
+    softbox(476, 36, 300, 60, 0.5);           /* velo dall'alto */
+    softboxDuro(140, 90, 90, 210, 0.9, 5);    /* pannello key: bordo netto */
+    softboxDuro(600, 70, 130, 90, 0.6, 6);    /* pannello fill: bordo netto */
+
+    var t = new THREE.CanvasTexture(c);
+    t.mapping = THREE.EquirectangularReflectionMapping;
+    t.encoding = THREE.sRGBEncoding;
+    var pm = new THREE.PMREMGenerator(ren);
+    pm.compileEquirectangularShader();
+    sc.environment = pm.fromEquirectangular(t).texture;
+    pm.dispose(); t.dispose();
+  })();
+
+  sc.add(new THREE.AmbientLight(col(0xfff4e6), 0.18));
+  var key = new THREE.DirectionalLight(col(0xfff8ec), 1.15);
+  key.position.set(3.0, 6.4, 4.4);
+  key.castShadow = true;
+  key.shadow.mapSize.set(1024, 1024);
+  key.shadow.camera.left = -2.4; key.shadow.camera.right = 2.4;
+  key.shadow.camera.top = 4.2; key.shadow.camera.bottom = -0.6;
+  key.shadow.radius = 7; key.shadow.bias = -0.0022;
+  sc.add(key);
+  var rim = new THREE.DirectionalLight(col(0xE3BC65), 0.34); rim.position.set(-4, 2.2, -3.4); sc.add(rim);
+  var fill = new THREE.DirectionalLight(0xffffff, 0.20); fill.position.set(-2, 1, 5); sc.add(fill);
+
+  /* piano d'appoggio (riceve l'ombra) */
+  var piano = new THREE.Mesh(
+    new THREE.PlaneGeometry(24, 24),
+    new THREE.ShadowMaterial({ opacity: 0.13 })
+  );
+  piano.rotation.x = -Math.PI / 2; piano.receiveShadow = true;
+  sc.add(piano);
+
+  /* ombra di contatto dipinta (morbida, sotto al vetro) */
+  var oc = document.createElement('canvas'); oc.width = oc.height = 128;
+  var ox = oc.getContext('2d');
+  var og = ox.createRadialGradient(64, 64, 4, 64, 64, 62);
+  og.addColorStop(0, 'rgba(20,17,14,.42)'); og.addColorStop(1, 'rgba(20,17,14,0)');
+  ox.fillStyle = og; ox.fillRect(0, 0, 128, 128);
+  var ombra = new THREE.Mesh(
+    new THREE.PlaneGeometry(2.5, 2.5),
+    new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(oc), transparent: true, depthWrite: false })
+  );
+  ombra.rotation.x = -Math.PI / 2; ombra.position.y = 0.004; sc.add(ombra);
+
+  /* ── il vetro ── */
+  /* Vetro: opacità bassa e DoubleSide. Le due pareti che si
+     sovrappongono al bordo raddoppiano l'opacità proprio sui
+     fianchi, che è il modo in cui un vetro reale si legge —
+     scuro ai lati, quasi invisibile al centro. Un'opacità alta
+     lo farebbe sembrare ceramica, com'era prima.
+     (Provata anche la transmission vera di three.js — rifrazione
+     reale dello sfondo attraverso il vetro. Funziona benissimo su
+     forme semplici, ma su questo bicchiere — parete sottile a
+     doppio giro di Lathe — restituiva un cilindro piatto e grigio
+     senza riflessi, per una causa non isolata con sicurezza.
+     Meglio il trucco ad alpha, già verificato, che una feature
+     che sembra rotta.)                                          */
+  var vetro = new THREE.Mesh(
+    new THREE.LatheGeometry(profiloBicchiere(), 72),
+    new THREE.MeshPhysicalMaterial({
+      color: col(0xEAF2F0), roughness: 0.04, metalness: 0,
+      clearcoat: 1, clearcoatRoughness: 0.03,
+      envMapIntensity: 1.6,
+      transparent: true, opacity: 0.16, side: THREE.DoubleSide,
+      depthWrite: false
+    })
+  );
+  vetro.castShadow = true;
+  vetro.renderOrder = 4;                     /* disegnato dopo i contenuti */
+  sc.add(vetro);
+
+  /* ── strati di liquido (perno sul fondo, crescono in su) ── */
+  function strato(colore, lucido) {
+    var m = new THREE.Mesh(cilindroBase(R_INT), new THREE.MeshPhysicalMaterial({
+      color: col(colore), roughness: lucido ? 0.14 : 0.42, metalness: 0.02,
+      clearcoat: lucido ? 0.7 : 0, clearcoatRoughness: 0.15
+    }));
+    m.position.y = Y_FONDO; m.scale.y = 0.0001; m.visible = false;
+    sc.add(m); return m;
+  }
+  G.nutella    = strato(0x4A2A18, true);
+  G.pistacchio = strato(0x8FA466, true);
+  G.misto      = strato(0xF3E7D2, false);
+
+  /* ── LA BEVANDA NON E' A TINTA UNITA ──────────────────────
+     Questo e' il salto vero verso la foto. Un iced latte non e'
+     un cilindro di un colore solo: il caffe' entra dall'alto e
+     scende in venature, il latte resta piu' chiaro sul fondo, e
+     i bordi sono piu' scuri perche' li' si guarda attraverso
+     piu' liquido. Dipingo tutto su una tela che uso come
+     texture, e ogni versata ci aggiunge le sue colate.        */
+  G.telaMisto = document.createElement('canvas');
+  G.telaMisto.width = 256; G.telaMisto.height = 256;
+  G.ctxMisto = G.telaMisto.getContext('2d');
+  G.texMisto = new THREE.CanvasTexture(G.telaMisto);
+  G.texMisto.encoding = THREE.sRGBEncoding;
+  G.texMisto.wrapS = THREE.RepeatWrapping;
+  /* Parete e superficie vogliono materiali diversi, ed e' qui
+     che si gioca la resa. Guardando il bicchiere dall'alto si
+     vede soprattutto il COPERCHIO del cilindro, che pero'
+     campiona il centro della texture: da li' usciva un tono
+     medio slavato invece del caffe' scuro che ti aspetti a
+     pelo. Un CylinderGeometry espone tre gruppi (parete, tappo
+     superiore, fondo), quindi passo un materiale per ciascuno:
+     la sfumatura sta sulla parete, mentre il pelo e' una tinta
+     piena, scura e lucida come la superficie di un latte.     */
+  var matParete = new THREE.MeshPhysicalMaterial({
+    map: G.texMisto, roughness: 0.46, metalness: 0,
+    envMapIntensity: 0.22,           /* basso: l'ambiente bianco slavava tutto */
+    clearcoat: 0.25, clearcoatRoughness: 0.3   /* velo bagnato sulla parete interna */
+  });
+  G.matPelo = new THREE.MeshPhysicalMaterial({
+    /* Lucida ma non uno specchio: un latte ha microschiuma in
+       superficie. Con roughness 0.10 e riflessione piena il
+       pelo rispecchiava il fondale bianco e il caffe' spariva —
+       provato col pelo a nero puro, rendeva grigio chiaro.
+       Il clearcoat aggiunge il velo lucido vero e proprio del
+       pelo di un liquido (dove nasce il riflesso a goccia della
+       reference), sopra al colore diffuso che resta opaco.    */
+    roughness: 0.24, metalness: 0,
+    envMapIntensity: 0.34,
+    clearcoat: 0.55, clearcoatRoughness: 0.18
+  });
+  /* Latte e caffe sono translucidi: i cubetti sotto il pelo si
+     devono intravedere. depthWrite spento + renderOrder basso
+     perche' il ghiaccio (renderOrder 3) vada disegnato sopra.
+     Le creme restano opache: sono dense e coprenti davvero.  */
+  [matParete, G.matPelo].forEach(function (m) {
+    m.transparent = true; m.opacity = 0.95; m.depthWrite = false;
+  });
+  G.misto.material = [matParete, G.matPelo, matParete];
+  G.misto.renderOrder = 1;
+  ridipingiMisto();
+  /* SCHIUMA — prima era una sfera scalata: crescendo diventava
+     una palla, perché la scala verticale finiva per pareggiare
+     il raggio. Ora è in due pezzi: un corpo cilindrico che sale
+     come gli altri strati, e una cupola di altezza FISSA
+     appoggiata sopra. Così tanta schiuma resta uno strato
+     spesso col dorso appena bombato, non un pallone.          */
+  var matSchiuma = new THREE.MeshStandardMaterial({ color: col(0xFBF5E9), roughness: 0.92, metalness: 0 });
+  G.schiumaCorpo = new THREE.Mesh(cilindroBase(1), matSchiuma);
+  G.schiumaCupola = new THREE.Mesh(geoCupola(), matSchiuma);
+  G.schiumaCorpo.scale.setScalar(0.0001); G.schiumaCorpo.visible = false;
+  G.schiumaCupola.scale.setScalar(0.0001); G.schiumaCupola.visible = false;
+  sc.add(G.schiumaCorpo, G.schiumaCupola);
+
+  /* gruppi per elementi solidi ed effetti */
+  G.gGhiaccio = new THREE.Group(); G.gGranella = new THREE.Group(); G.gFx = new THREE.Group();
+  G.gGhiaccio.renderOrder = 3;              /* traslucido: prima del vetro (4) */
+  sc.add(G.gGhiaccio, G.gGranella, G.gFx);
+
+  /* geometrie e materiali condivisi (istanziati una volta sola) */
+  G.geoCubi = [geoCubetto(0), geoCubetto(1), geoCubetto(2)];
+  /* Tre materiali quasi uguali: il ghiaccio vero non è mai
+     tutto identico. Traslucido (non opaco) così si vede il
+     cubetto dietro e il liquido attraverso, come in foto.
+     depthWrite resta attivo: i cubetti si coprono in modo
+     netto invece di impastarsi fra loro.                    */
+  /* Ghiaccio "da foto": corpo ghiacciato quasi opaco + una
+     vernice lucida sopra (clearcoat), che è esattamente come
+     si comporta un cubetto appena tolto dal freezer e già
+     umido. Provata prima la strada del cubetto trasparente:
+     bianco traslucido su fondo crema sparisce, non c'è
+     contrasto. I cubetti della reference sono infatti opachi
+     e lattiginosi, non vetrosi.                             */
+  /* Il ghiaccio si sporca dove pesca nella bevanda. Non si può
+     fare col materiale: la tinta dipende da QUANTO IN ALTO sta
+     il singolo punto del cubetto rispetto al pelo del liquido,
+     quindi va decisa per frammento. Inietto due uniform nello
+     shader standard — il livello del liquido e il suo colore —
+     e sfumo il diffuse solo sotto quella quota. L'alfa non la
+     tocco, così i cubetti restano traslucidi come prima.     */
+  G.uPelo  = { value: -99 };
+  G.uTinta = { value: new THREE.Color(0xF3E7D2) };
+
+  function sporcaSottoIlPelo(mat) {
+    mat.onBeforeCompile = function (sh) {
+      sh.uniforms.uPelo  = G.uPelo;
+      sh.uniforms.uTinta = G.uTinta;
+      sh.vertexShader = sh.vertexShader
+        .replace('#include <common>', '#include <common>\nvarying vec3 vMondo;')
+        .replace('#include <project_vertex>',
+                 'vMondo = (modelMatrix * vec4(transformed, 1.0)).xyz;\n#include <project_vertex>');
+      sh.fragmentShader = sh.fragmentShader
+        .replace('#include <common>',
+                 '#include <common>\nvarying vec3 vMondo;\nuniform float uPelo;\nuniform vec3 uTinta;')
+        .replace('#include <color_fragment>',
+                 '#include <color_fragment>\n' +
+                 'float sotto = smoothstep(uPelo + 0.05, uPelo - 0.09, vMondo.y);\n' +
+                 'diffuseColor.rgb = mix(diffuseColor.rgb,' +
+                 ' mix(diffuseColor.rgb, uTinta, 0.78), sotto);\n');
+    };
+  }
+
+  G.matGhiaccio = [0, 1, 2].map(function (i) {
+    var m = new THREE.MeshPhysicalMaterial({
+      color: col([0xDCEFF4, 0xE6F4F7, 0xD6ECF1][i]),
+      roughness: 0.16 + i * 0.05,          /* corpo ghiacciato, un po' più lucido di prima */
+      metalness: 0,
+      clearcoat: 1, clearcoatRoughness: 0.05,   /* superficie bagnata */
+      envMapIntensity: 2.4,
+      transparent: true, opacity: 0.9,
+      depthWrite: true
+    });
+    sporcaSottoIlPelo(m);
+    return m;
+  });
+  G.geoScaglie = [geoScaglia(), geoScaglia(), geoScaglia()];
+  G.matGranella = new THREE.MeshStandardMaterial({ color: col(0x8A5527), roughness: 0.72, flatShading: true });
+  G.istanzaGran = new THREE.InstancedMesh(G.geoScaglie[0], G.matGranella, MAX_GRAN);
+  G.istanzaGran.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  G.istanzaGran.count = 0;
+  G.istanzaGran.castShadow = true;
+  G.istanzaGran.frustumCulled = false;   /* i granelli escono dal bicchiere */
+  sc.add(G.istanzaGran);
+
+  /* Sta al posto del Group nelle funzioni che smaltiscono i
+     pezzi (svuota, tracimazione, togliUltimo): quelle chiamano
+     gruppo.remove(m), e per le istanze "rimuovere" vuol dire
+     toglierlo dalla lista che riempie le matrici.            */
+  G.granelli = { remove: function (m) {
+    var i = granelliVivi.indexOf(m);
+    if (i >= 0) granelliVivi.splice(i, 1);
+  } };
+
+  G.sc = sc; G.cam = cam; G.ren = ren; G.host = host; G.vetro = vetro;
+
+  /* ── POST-PRODUZIONE ──────────────────────────────────────
+     Quello che separa un render "CG" da una foto non è quasi
+     mai la geometria: è l'ottica. Una reflex a f/2 sfoca il
+     fondale, vignetta agli angoli, ha grana e una minima
+     aberrazione cromatica ai bordi. Senza queste cose ogni
+     pixel è a fuoco e l'occhio legge "computer".
+
+     Un solo passaggio a schermo intero invece di una catena
+     di effetti: la scena va su un render target con la sua
+     depth texture, poi uno shader legge profondità e colore e
+     fa tutto insieme. Un passaggio in più, non cinque.       */
+  var POST = (function () {
+    var ok = !!THREE.DepthTexture &&
+             (ren.capabilities.isWebGL2 || !!ren.extensions.get('WEBGL_depth_texture'));
+    if (!ok || REDUCED) return { attivo: false, ridimensiona: function () {} };
+
+    var rt = new THREE.WebGLRenderTarget(1, 1, {
+      minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter,
+      format: THREE.RGBAFormat, stencilBuffer: false
+    });
+    rt.texture.encoding = THREE.sRGBEncoding;
+    rt.depthTexture = new THREE.DepthTexture();
+    rt.depthTexture.type = THREE.UnsignedShortType;
+
+    var quad = new THREE.Scene();
+    var oc = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    var mat = new THREE.ShaderMaterial({
+      uniforms: {
+        tCol:   { value: rt.texture },
+        tDep:   { value: rt.depthTexture },
+        uRis:   { value: new THREE.Vector2(1, 1) },
+        uVicino:{ value: cam.near },
+        uLontano:{ value: cam.far },
+        uFuoco: { value: 6.0 },      /* distanza del piano a fuoco */
+        uAmpio: { value: 1.9 },      /* profondita di campo utile */
+        uSfoca: { value: 3.2 },      /* raggio massimo di sfocatura, px */
+        uTempo: { value: 0 }
+      },
+      vertexShader:
+        'varying vec2 vUv;' +
+        'void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }',
+      fragmentShader: [
+        'varying vec2 vUv;',
+        'uniform sampler2D tCol; uniform sampler2D tDep;',
+        'uniform vec2 uRis; uniform float uVicino, uLontano;',
+        'uniform float uFuoco, uAmpio, uSfoca, uTempo;',
+
+        /* la depth texture non e' lineare: va riportata a metri */
+        'float distanzaReale(float d){',
+        '  float z = d * 2.0 - 1.0;',
+        '  return (2.0 * uVicino * uLontano) /',
+        '         (uLontano + uVicino - z * (uLontano - uVicino));',
+        '}',
+
+        'void main(){',
+        '  float dist = distanzaReale(texture2D(tDep, vUv).x);',
+        /* quanto e' fuori fuoco questo punto (cerchio di confusione) */
+        '  float coc = clamp(abs(dist - uFuoco) / uAmpio, 0.0, 1.0);',
+        '  coc = pow(coc, 1.35);',
+        '  vec2 px = uSfoca * coc / uRis;',
+
+        /* spirale ad angolo aureo: 12 campioni bastano perche'
+           il raggio resta piccolo, e non fanno banding come
+           una griglia regolare */
+        '  vec3 somma = texture2D(tCol, vUv).rgb;',
+        '  float peso = 1.0;',
+        '  for (int i = 0; i < 12; i++){',
+        '    float f = (float(i) + 0.5) / 12.0;',
+        '    float a = float(i) * 2.39996;',
+        '    vec2 off = vec2(cos(a), sin(a)) * sqrt(f) * px;',
+        '    somma += texture2D(tCol, vUv + off).rgb; peso += 1.0;',
+        '  }',
+        '  vec3 c = somma / peso;',
+
+        /* aberrazione cromatica: solo ai bordi, appena percepibile */
+        '  vec2 dal = vUv - 0.5;',
+        '  float r2 = dot(dal, dal);',
+        '  vec2 sc = dal * r2 * 0.010;',
+        '  c.r = texture2D(tCol, vUv + sc).r * 0.5 + c.r * 0.5;',
+        '  c.b = texture2D(tCol, vUv - sc).b * 0.5 + c.b * 0.5;',
+
+        /* vignettatura morbida */
+        '  c *= smoothstep(1.15, 0.34, r2);',
+
+        /* grana come sulla pellicola: rumore fine, un filo piu
+           marcato nelle ombre (commento JS, non GLSL) */
+        '  float g = fract(sin(dot(vUv * uRis + uTempo, vec2(12.9898, 78.233))) * 43758.5453);',
+        '  float lum = dot(c, vec3(0.299, 0.587, 0.114));',
+        '  c += (g - 0.5) * 0.020 * (1.25 - lum);',
+
+        /* micro-contrasto + split-tone: le foto vere non sono mai
+           neutre, le ombre virano leggermente al freddo e le luci
+           al caldo. Senza questo il render resta "piatto", anche
+           con la profondita di campo giusta.                     */
+        '  c = (c - 0.5) * 1.045 + 0.5;',
+        '  vec3 fredda = vec3(0.965, 0.99, 1.03);',
+        '  vec3 calda  = vec3(1.03, 1.006, 0.965);',
+        '  c *= mix(fredda, calda, smoothstep(0.15, 0.85, lum));',
+        '  float sat = dot(c, vec3(0.299, 0.587, 0.114));',
+        '  c = mix(vec3(sat), c, 1.06);',
+
+        '  gl_FragColor = vec4(c, 1.0);',
+        '}'
+      ].join('\n')
+    });
+    quad.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat));
+
+    return {
+      attivo: true,
+      ridimensiona: function (w, h) {
+        var p = ren.getPixelRatio();
+        rt.setSize(Math.round(w * p), Math.round(h * p));
+        mat.uniforms.uRis.value.set(w * p, h * p);
+      },
+      disegna: function (t) {
+        /* metto a fuoco il bicchiere: la distanza cambia con la
+           parallasse, quindi va ricalcolata ogni fotogramma */
+        mat.uniforms.uFuoco.value = cam.position.distanceTo(MIRA);
+        mat.uniforms.uTempo.value = t;
+        ren.setRenderTarget(rt);
+        ren.render(sc, cam);
+        ren.setRenderTarget(null);
+        ren.render(quad, oc);
+      }
+    };
+  })();
+
+  G.POST = POST;
+
+  function resize() {
+    var w = host.clientWidth, h = host.clientHeight;
+    if (!w || !h) return;
+    ren.setSize(w, h, false);
+    cam.aspect = w / h; cam.updateProjectionMatrix();
+    POST.ridimensiona(w, h);
+    inquadra();
+  }
+  addEventListener('resize', resize); resize();
+
+  /* parallasse dolce del punto di vista */
+  if (!REDUCED && window.gsap) {
+    var qx = gsap.quickTo(cam.position, 'x', { duration: 1.0, ease: 'power3.out' });
+    var qy = gsap.quickTo(cam.position, 'y', { duration: 1.0, ease: 'power3.out' });
+    host.addEventListener('pointermove', function (e) {
+      var b = host.getBoundingClientRect();
+      qx(CAM0.x + ((e.clientX - b.left) / b.width - 0.5) * 0.7);
+      qy(CAM0.y - ((e.clientY - b.top) / b.height - 0.5) * 0.45);
+    });
+    host.addEventListener('pointerleave', function () { qx(CAM0.x); qy(CAM0.y); });
+  }
+
+  /* travaso delle matrici dei granelli dentro l'InstancedMesh */
+  function aggiornaGranella() {
+    var n = Math.min(granelliVivi.length, MAX_GRAN);
+    for (var i = 0; i < n; i++) {
+      var m = granelliVivi[i];
+      m.updateMatrix();
+      G.istanzaGran.setMatrixAt(i, m.matrix);
+    }
+    G.istanzaGran.count = n;
+    if (n) G.istanzaGran.instanceMatrix.needsUpdate = true;
+  }
+
+  var t0 = performance.now();
+  (function loop() {
+    requestAnimationFrame(loop);
+    cam.lookAt(MIRA);
+    aggiornaGranella();
+    if (POST.attivo) POST.disegna((performance.now() - t0) / 1000);
+    else ren.render(sc, cam);
+  })();
+
+  var l = document.getElementById('load');
+  if (l) l.remove();
+
+  if (window.gsap && !REDUCED) {
+    gsap.from(cam.position, { y: CAM0.y + 0.9, duration: 1.4, ease: 'power3.out' });
+  }
+}
+
+/* ── 6. ALTEZZE DEGLI STRATI ─────────────────────────────
+   Le dosi diventano percentuali di riempimento. L'ordine
+   di impilamento è fisso (creme sotto, misto, schiuma) a
+   prescindere dall'ordine con cui l'utente clicca.        */
+function altezze() {
+  var nut  = Math.min(stato.nutella, byId.nutella.max) * 6.2;
+  var pis  = Math.min(stato.pistacchio, byId.pistacchio.max) * 6.2;
+  var mist = Math.min(stato.latte + stato.caffe, 11) * 6.0;
+  var sch  = Math.min(stato.schiuma, byId.schiuma.max) * 5.6;
+  var tot  = nut + pis + mist + sch, MAX = 84;
+  if (tot > MAX) { var k = MAX / tot; nut *= k; pis *= k; mist *= k; sch *= k; tot = MAX; }
+  return { nut: nut, pis: pis, mist: mist, sch: sch, tot: tot };
+}
+function yPelo() { return Y_FONDO + (altezze().tot / 100) * CORSA; }
+
+/* Quota della superficie a una certa distanza dall'asse.
+   Serve per granella e bollicine: con la schiuma la cima è una
+   cupola, non un piano, e appoggiandoli tutti alla quota
+   dell'apice quelli esterni restavano sospesi in un anello. */
+function quotaSuperficie(rr) {
+  var h = altezze();
+  var yLiq = Y_FONDO + u(h.nut + h.pis + h.mist);
+  if (h.sch <= 0.05) return yLiq;
+  var sh = u(h.sch), hCup = Math.min(0.15, sh * 0.55);
+  var q = Math.min(rr / (R_INT * 0.99), 1);
+  return yLiq + (sh - hCup) + hCup * Math.sqrt(Math.max(0, 1 - q * q));
+}
+function pieno()  { return Object.keys(stato).some(function (k) { return stato[k] > 0; }); }
+function u(pct)   { return (pct / 100) * CORSA; }
+
+/* colore del misto latte+caffè: interpola in base al rapporto */
+function coloreMisto() {
+  var l = stato.latte, c = stato.caffe, t = l + c;
+  if (!t) return 0xF3E7D2;
+  var q = c / t;
+  var a = { r: 0xF6, g: 0xEC, b: 0xD8 }, b = { r: 0x4A, g: 0x2A, b: 0x14 };
+  var m = 1 - Math.pow(1 - q, 1.35);
+  return ((a.r + (b.r - a.r) * m) << 16 | (a.g + (b.g - a.g) * m) << 8 | (a.b + (b.b - a.b) * m)) & 0xffffff;
+}
+
+function disponi(anim) {
+  var h = altezze(), d = anim === false ? 0 : 0.95, e = 'back.out(1.35)';
+  var y = Y_FONDO;
+
+  function set(mesh, pct) {
+    var vis = pct > 0.05;
+    mesh.visible = vis;
+    var alt = Math.max(u(pct), 0.0001), yy = y;
+    if (vis) y += u(pct);
+    if (d && window.gsap) {
+      gsap.to(mesh.scale, { y: alt, duration: d, ease: e, overwrite: true });
+      gsap.to(mesh.position, { y: yy, duration: d, ease: e, overwrite: true });
+    } else { mesh.scale.y = alt; mesh.position.y = yy; }
+  }
+
+  set(G.nutella, h.nut);
+  set(G.pistacchio, h.pis);
+  ridipingiMisto();
+  set(G.misto, h.mist);
+
+  /* il ghiaccio si sporca fin dove arriva la bevanda: se non
+     c'è misto (solo creme sul fondo) non deve sporcarsi nulla */
+  G.uPelo.value = h.mist > 0.05 ? y : -99;
+  G.uTinta.value.setHex(coloreMisto());
+
+  /* SCHIUMA: corpo che sale + cupola di altezza quasi fissa.
+     La cupola si limita anche a metà dello spessore totale,
+     così una sola dose resta una velatura e non un cappello. */
+  var sVis = h.sch > 0.05;
+  var sh   = Math.max(u(h.sch), 0.0001);
+  var hCup = Math.min(0.15, sh * 0.55);
+  var hCor = Math.max(sh - hCup, 0.0001);
+  var rr   = R_INT * 0.99;
+  G.schiumaCorpo.visible = sVis; G.schiumaCupola.visible = sVis;
+
+  var sCor = sVis ? { x: rr, y: hCor, z: rr } : { x: 0.0001, y: 0.0001, z: 0.0001 };
+  var sCup = sVis ? { x: rr, y: hCup, z: rr } : { x: 0.0001, y: 0.0001, z: 0.0001 };
+  if (d && window.gsap) {
+    gsap.to(G.schiumaCorpo.scale,  Object.assign({ duration: d, ease: e, overwrite: true }, sCor));
+    gsap.to(G.schiumaCupola.scale, Object.assign({ duration: d, ease: e, overwrite: true }, sCup));
+    gsap.to(G.schiumaCorpo.position,  { y: y, duration: d, ease: e, overwrite: true });
+    gsap.to(G.schiumaCupola.position, { y: y + hCor, duration: d, ease: e, overwrite: true });
+  } else {
+    G.schiumaCorpo.scale.set(sCor.x, sCor.y, sCor.z);   G.schiumaCorpo.position.y = y;
+    G.schiumaCupola.scale.set(sCup.x, sCup.y, sCup.z);  G.schiumaCupola.position.y = y + hCor;
+  }
+
+  riposiziona();
+  aggiornaHint(h.tot);
+}
+
+function aggiornaHint(tot) {
+  var p = document.getElementById('fillPct');
+  if (p) p.textContent = Math.round(tot) + '% pieno';
+  var hh = document.getElementById('hint');
+  if (!hh) return;
+  var n = Object.keys(stato).reduce(function (a, k) { return a + stato[k]; }, 0);
+  hh.textContent = !pieno() ? 'Il bicchiere è vuoto'
+    : tot > 78 ? 'Il bicchiere è quasi colmo'
+    : 'In composizione — ' + n + (n === 1 ? ' dose' : ' dosi');
+}
+
+/* ── 7. EFFETTI ──────────────────────────────────────────── */
+function getto(colore, denso) {
+  var r = denso ? 0.05 : 0.028;
+  var g = new THREE.CylinderGeometry(r, r * 0.82, 1, 18, 1, true);
+  g.translate(0, -0.5, 0);                                  /* perno in alto */
+  var m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({
+    color: col(new THREE.Color(colore).getHex()), roughness: 0.14, metalness: 0.02, side: THREE.DoubleSide
+  }));
+  m.position.set((Math.random() - 0.5) * 0.2, Y_ORLO + 1.1, (Math.random() - 0.5) * 0.14);
+  m.scale.y = 0.0001;
+  G.gFx.add(m);
+
+  var dur = denso ? 1.0 : 0.66;
+  var lung = Y_ORLO + 1.1 - yPelo();
+  if (!window.gsap || REDUCED) {
+    setTimeout(function () { G.gFx.remove(m); m.geometry.dispose(); m.material.dispose(); }, 60);
+    return dur * 1000;
+  }
+  gsap.timeline({ onComplete: function () { G.gFx.remove(m); m.geometry.dispose(); m.material.dispose(); } })
+    .to(m.scale, { y: lung, duration: dur * 0.34, ease: 'power2.out' })
+    .to(m.scale, { y: lung, duration: dur * 0.40 })
+    .to(m.scale, { y: 0.0001, duration: dur * 0.26, ease: 'power1.in' });
+  return dur * 1000;
+}
+
+function onda(k) {
+  if (REDUCED || !window.gsap) return;
+  var m = new THREE.Mesh(
+    new THREE.RingGeometry(R_INT * 0.24, R_INT * 0.34, 40),
+    new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5,
+      side: THREE.DoubleSide, depthWrite: false })
+  );
+  m.rotation.x = -Math.PI / 2;
+  m.position.y = yPelo() + 0.012;
+  G.gFx.add(m);
+  gsap.to(m.scale, { x: k || 2.6, z: k || 2.6, duration: 0.85, ease: 'power2.out' });
+  gsap.to(m.material, { opacity: 0, duration: 0.85, ease: 'power2.out',
+    onComplete: function () { G.gFx.remove(m); m.geometry.dispose(); m.material.dispose(); } });
+}
+
+function sussulto(mesh) {
+  if (REDUCED || !window.gsap || !mesh.visible) return;
+  gsap.fromTo(mesh.scale, { x: 1.035, z: 1.035 },
+    { x: 1, z: 1, duration: 0.75, ease: 'elastic.out(1,0.45)' });
+}
+
+/* ── CATASTA DI GHIACCIO ─────────────────────────────────
+   I cubetti non si posano tutti sul fondo: si incastrano
+   uno sull'altro formando una colonna storta che sale nel
+   bicchiere. Il passo verticale è l'altezza che ogni nuovo
+   cubetto aggiunge alla pila — meno del suo lato, perché si
+   incastra negli spazi di quello sotto.                    */
+function baseCatasta() {
+  /* Il ghiaccio si mette PRIMA e il liquido si versa attorno:
+     la catasta appoggia sul fondo e NON si sposta quando
+     salgono latte e caffè — è il pelo del liquido che sale fra
+     i cubetti. Fanno eccezione le creme (nocciolata,
+     pistacchio), che sono dense, restano sul fondo e semmai
+     sollevano la pila.
+     Prima la base seguiva il pelo del liquido e i cubetti
+     finivano a galleggiare tutti sopra, che non è come sta il
+     ghiaccio dentro un bicchiere.                            */
+  var h = altezze();
+  return Y_FONDO + u(h.nut + h.pis);
+}
+
+/* il cubetto più alto può sporgere dal bordo, ma solo per
+   mezza altezza: oltre sembrerebbe sospeso in aria */
+var CIMA = Y_ORLO + 0.10;
+
+function passoCatasta(n) {
+  var spazio = CIMA - baseCatasta();
+  var naturale = 0.25;                       /* incastro tipico */
+  /* se i cubetti sono tanti la pila si comprime invece di
+     uscire dal bicchiere */
+  return Math.min(naturale, spazio / Math.max(n, 1));
+}
+
+function yRiposo(size, i) {
+  var y = baseCatasta() + size * 0.55 + i * passoCatasta(ghiaccioEls.length || 1);
+  return Math.min(y, CIMA);
+}
+
+function riposiziona() {
+  if (!window.gsap) return;
+  ghiaccioEls.forEach(function (it, i) {
+    if (it.cade) return;
+    gsap.to(it.m.position, { y: yRiposo(it.size, i), duration: 0.85, ease: 'power2.out', overwrite: 'auto' });
+  });
+  granellaEls.forEach(function (it) {
+    if (it.cade) return;
+    gsap.to(it.m.position, { y: quotaSuperficie(it.r) + it.j, duration: 0.75, ease: 'power2.out', overwrite: 'auto' });
+  });
+  bolleEls.forEach(function (b) {
+    /* la schiuma ora occupa esattamente la sua quota, quindi
+       la sua cima coincide col pelo complessivo */
+    gsap.to(b.position, { y: quotaSuperficie(b.userData.r) - 0.012, duration: 0.7, ease: 'power2.out', overwrite: 'auto' });
+  });
+}
+
+function aggiungiGhiaccio(n) {
+  for (var i = 0; i < n && ghiaccioEls.length < 12; i++) {
+    var k = ghiaccioEls.length;
+    var size = 0.37 + Math.random() * 0.11;          /* pezzi grandi */
+    var mat = G.matGhiaccio[k % 3];
+    var m = new THREE.Mesh(G.geoCubi[k % 3], mat);
+    m.castShadow = true;
+    /* non tutti cubi perfetti: qualcuno più basso o più largo */
+    m.scale.set(size, size * (0.80 + Math.random() * 0.22), size * (0.92 + Math.random() * 0.16));
+
+    /* colonna storta: ogni cubetto sfalsato rispetto al
+       precedente, ma senza uscire dalla parete del vetro */
+    var a = k * 2.39 + Math.random() * 0.7;          /* giro progressivo */
+    var rr = 0.05 + Math.random() * 0.11;
+    m.position.set(Math.cos(a) * rr, Y_ORLO + 1.35, Math.sin(a) * rr);
+
+    /* inclinazione di riposo: marcata ma plausibile, come i
+       cubetti che si incastrano di traverso nel bicchiere */
+    var rx = (Math.random() - 0.5) * 1.15;
+    var ry = Math.random() * Math.PI * 2;
+    var rz = (Math.random() - 0.5) * 1.15;
+    m.rotation.set(rx - 0.8, ry - 1.2, rz + 0.7);    /* parte ruotato, atterra dritto */
+    G.gGhiaccio.add(m);
+
+    var it = { m: m, size: size, cade: true };
+    ghiaccioEls.push(it);
+    var yr = yRiposo(size, k);
+
+    if (!window.gsap || REDUCED) {
+      m.position.y = yr; m.rotation.set(rx, ry, rz); it.cade = false;
+      riposiziona(); continue;
+    }
+    (function (it, m, yr, d, rx, ry, rz) {
+      gsap.timeline({ delay: d, onComplete: function () {
+          it.cade = false;
+          onda(1.7);
+          /* niente saliscendi: in una pila stonerebbe. Solo una
+             derivа lentissima, appena percettibile.            */
+          gsap.to(m.rotation, { y: m.rotation.y + 0.14, duration: 6,
+            ease: 'sine.inOut', yoyo: true, repeat: -1 });
+        } })
+        .to(m.position, { y: yr - 0.07, duration: 0.44, ease: 'power1.in' })
+        .to(m.position, { y: yr + 0.045, duration: 0.17, ease: 'power2.out' })
+        .to(m.position, { y: yr, duration: 0.26, ease: 'power1.inOut' });
+      gsap.to(m.rotation, { x: rx, y: ry, z: rz, duration: 0.9, delay: d, ease: 'power2.out' });
+    })(it, m, yr, i * 0.11, rx, ry, rz);
+  }
+  /* i cubetti già presenti si riassestano per fare posto */
+  riposiziona();
+}
+
+/* Granella: granelli veri, non scaglioni. Il calibro
+   dichiarato in etichetta è 2–4 mm e alla scala della scena
+   (1 unità ≈ 6,4 cm) vuol dire un raggio di 0,016–0,032.
+   Prima erano il triplo e appena 7 per dose, quindi
+   sembravano sempre gli stessi quattro pezzi: ora ogni dose
+   ne versa 18, così la manciata cresce davvero a vista.      */
+var GRAN_PER_DOSE = 18;
+
+function aggiungiGranella(n) {
+  for (var i = 0; i < n && granellaEls.length < 150; i++) {
+    var size = 0.016 + Math.random() * 0.016;
+    /* Object3D e non Mesh: non entra nella scena, serve solo a
+       portare la trasformazione che poi finisce nell'istanza */
+    var m = new THREE.Object3D();
+    var k = size / 0.5;
+    m.scale.set(k * (0.8 + Math.random() * 0.45), k * (0.75 + Math.random() * 0.5),
+                k * (0.8 + Math.random() * 0.45));
+    /* distribuzione a disco: senza la radice si ammucchiano
+       tutti al centro invece di sparpagliarsi sulla superficie */
+    var a = Math.random() * Math.PI * 2;
+    var rr = Math.sqrt(Math.random()) * R_INT * 0.88;
+    m.position.set(Math.cos(a) * rr, Y_ORLO + 1.0, Math.sin(a) * rr);
+    m.rotation.set(Math.random() * 3, Math.random() * 3, Math.random() * 3);
+    granelliVivi.push(m);
+
+    var j = 0.004 + Math.random() * 0.022;
+    var it = { m: m, j: j, r: rr, cade: true };
+    granellaEls.push(it);
+    var yr = quotaSuperficie(rr) + j;
+    if (!window.gsap || REDUCED) { m.position.y = yr; it.cade = false; continue; }
+    (function (it, m, yr, d) {
+      gsap.to(m.position, { y: yr, duration: 0.42 + Math.random() * 0.18, delay: d, ease: 'power1.in',
+        onComplete: function () { it.cade = false; } });
+      gsap.to(m.rotation, { x: m.rotation.x + 2.4, z: m.rotation.z + 1.8, duration: 0.55, delay: d, ease: 'power1.out' });
+    })(it, m, yr, i * 0.012);
+  }
+}
+
+function bolleSchiuma() {
+  if (REDUCED) return;
+  for (var i = 0; i < 5 && bolleEls.length < 26; i++) {
+    var b = new THREE.Mesh(
+      new THREE.SphereGeometry(0.018 + Math.random() * 0.022, 10, 8),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.55 })
+    );
+    var a = Math.random() * Math.PI * 2, rr = Math.random() * R_INT * 0.8;
+    b.userData.r = rr;
+    b.position.set(Math.cos(a) * rr, quotaSuperficie(rr) - 0.012, Math.sin(a) * rr);
+    b.scale.setScalar(0.001);
+    G.gFx.add(b); bolleEls.push(b);
+    if (window.gsap) gsap.to(b.scale, { x: 1, y: 1, z: 1, duration: 0.45, delay: i * 0.05, ease: 'back.out(2)' });
+    else b.scale.setScalar(1);
+  }
+}
+
+/* ── 8. AGGIUNTA DI UNA DOSE ─────────────────────────────── */
+var AZIONI = {
+  ghiaccio: function () { aggiungiGhiaccio(2); },
+  granella: function () { aggiungiGranella(GRAN_PER_DOSE); },
+  schiuma:  function () { setTimeout(function () { disponi(); bolleSchiuma(); }, 90); },
+  latte:      function () { versa('#FFF7E8', false, G.misto);
+                            setTimeout(function(){ colata('rgba(255,247,232,0.95)'); }, 420); },
+  caffe:      function () { versa('#43260F', false, G.misto);
+                            setTimeout(function(){ colata('rgba(48,26,12,0.95)'); }, 420); },
+  pistacchio: function () { versa('#8FA466', true,  G.pistacchio); },
+  nutella:    function () { versa('#3E2011', true,  G.nutella); }
+};
+
+function versa(colore, denso, mesh) {
+  var ms = getto(colore, denso);
+  setTimeout(function () {
+    disponi();
+    onda(denso ? 2.0 : 2.6);
+    sussulto(mesh);
+  }, ms * (denso ? 0.5 : 0.4));
+}
+
+function aggiungi(id) {
+  if (tracimando) return;                 /* durante la tracimazione non si serve */
+  var r = byId[id];
+  if (stato[id] >= r.max) { insisti(id); return; }
+
+  var primaTot = altezze().tot;
+  stato[id]++;
+  (AZIONI[id] || function () { disponi(); })();
+  if (id !== 'schiuma') disponi();
+  aggiornaScheda(id);
+  renderScontrino();
+
+  /* Se il bicchiere era già al tetto, la dose in più non ha
+     alzato nulla: conta come insistenza anche questa.
+     Vale solo per ciò che occupa volume — ghiaccio e granella
+     non alzano MAI il livello, quindi qui verrebbero scambiati
+     per insistenze e basterebbero tre cubetti dopo un caffè
+     per far tracimare il bicchiere senza motivo.             */
+  if (VOLUMETRICI[id] && altezze().tot - primaTot < 0.4 && primaTot > 1) insisti(id, true);
+  else insistenze = 0;
+}
+
+function lampeggiaMax(id) {
+  var el = document.querySelector('.prod[data-id="' + id + '"]');
+  if (!el || !window.gsap) return;
+  gsap.fromTo(el, { x: -3 }, { x: 0, duration: 0.5, ease: 'elastic.out(1,0.35)' });
+}
+
+/* ── TROPPO PIENO ────────────────────────────────────────────
+   Insistere su una referenza esaurita (o continuare a versare
+   in un bicchiere già al tetto) fa salire la tensione: prima
+   la scheda vibra, poi trema tutto il banco. Al terzo tentativo
+   il bicchiere tracima davvero e si svuota da solo.          */
+var insistenze = 0, tracimando = false;
+var SOGLIA_TRACIMA = 3;
+/* referenze che occupano volume nel bicchiere (vedi altezze) */
+var VOLUMETRICI = { latte: 1, caffe: 1, nutella: 1, pistacchio: 1, schiuma: 1 };
+
+function insisti(id, gia) {
+  if (tracimando) return;
+  insistenze++;
+  if (!gia) lampeggiaMax(id);
+
+  var h = document.getElementById('hint');
+  if (insistenze >= SOGLIA_TRACIMA) { tracimazione(); return; }
+  if (h) {
+    h.textContent = insistenze === 1
+      ? 'Dose massima raggiunta per questa referenza'
+      : 'Attento, il bicchiere non ne prende altro…';
+  }
+  trema(insistenze * 3.2);
+}
+
+/* scossone del banco: scuoto la tela, così tremano vetro e
+   contenuto insieme senza toccare la scena */
+function trema(px) {
+  var cv = document.getElementById('glc');
+  if (!cv || !window.gsap || REDUCED) return;
+  gsap.fromTo(cv, { x: -px },
+    { x: 0, duration: 0.65, ease: 'elastic.out(1.6,0.28)', overwrite: true });
+}
+
+function aggiornaScheda(id) {
+  var q = document.querySelector('.prod-qty[data-id="' + id + '"]');
+  var b = document.querySelector('.prod-add[data-id="' + id + '"]');
+  if (q) {
+    q.textContent = stato[id];
+    if (window.gsap) gsap.fromTo(q, { scale: 0.4, opacity: 0 },
+      { scale: 1, opacity: stato[id] ? 1 : 0, duration: 0.4, ease: 'back.out(2.4)' });
+    else q.style.opacity = stato[id] ? 1 : 0;
+  }
+  if (b && stato[id]) {
+    b.textContent = '✓'; b.classList.add('on');
+    setTimeout(function () { b.textContent = '+'; b.classList.remove('on'); }, 900);
+  }
+}
+
+/* ── 9. SVUOTA ───────────────────────────────────────────── */
+function svuota() {
+  REFERENZE.forEach(function (r) { stato[r.id] = 0; });
+  insistenze = 0;
+  COLATE.length = 0; ridipingiMisto();
+
+  [G.nutella, G.pistacchio, G.misto].forEach(function (m) {
+    if (window.gsap) gsap.to(m.scale, { y: 0.0001, duration: 0.8, ease: 'power2.inOut', overwrite: true,
+      onComplete: function () { m.visible = false; } });
+    else { m.scale.y = 0.0001; m.visible = false; }
+    if (window.gsap) gsap.to(m.position, { y: Y_FONDO, duration: 0.8, ease: 'power2.inOut', overwrite: true });
+  });
+  [G.schiumaCorpo, G.schiumaCupola].forEach(function (m) {
+    if (window.gsap) gsap.to(m.scale, { x: 0.0001, y: 0.0001, z: 0.0001, duration: 0.8,
+      ease: 'power2.inOut', overwrite: true, onComplete: function () { m.visible = false; } });
+    else { m.scale.setScalar(0.0001); m.visible = false; }
+  });
+
+  function spegni(arr, gruppo) {
+    arr.forEach(function (it, i) {
+      var m = it.m || it;
+      if (window.gsap) {
+        gsap.killTweensOf(m.position); gsap.killTweensOf(m.rotation); gsap.killTweensOf(m.scale);
+        gsap.to(m.position, { y: -1.2, duration: 0.5, delay: i * 0.018, ease: 'power1.in' });
+        gsap.to(m.scale, { x: 0.001, y: 0.001, z: 0.001, duration: 0.45, delay: i * 0.018 + 0.08,
+          onComplete: function () { gruppo.remove(m); } });
+      } else gruppo.remove(m);
+    });
+    arr.length = 0;
+  }
+  spegni(ghiaccioEls, G.gGhiaccio);
+  spegni(granellaEls, G.granelli);
+  bolleEls.forEach(function (b) {
+    if (window.gsap) gsap.killTweensOf(b.scale);
+    G.gFx.remove(b); b.geometry.dispose(); b.material.dispose();
+  });
+  bolleEls.length = 0;
+
+  document.querySelectorAll('.prod-qty').forEach(function (q) { q.textContent = ''; q.style.opacity = 0; });
+  aggiornaHint(0);
+  renderScontrino();
+}
+
+/* gocce che colano lungo la parete esterna del vetro */
+function colatura(colore, n) {
+  if (REDUCED || !window.gsap) return;
+  for (var i = 0; i < n; i++) {
+    var g = new THREE.Mesh(
+      new THREE.SphereGeometry(0.026 + Math.random() * 0.026, 10, 8),
+      new THREE.MeshStandardMaterial({ color: col(colore), roughness: 0.25, metalness: 0 })
+    );
+    /* angoli sbilanciati verso chi guarda: le gocce dietro al
+       vetro non si vedrebbero e sembrerebbero sprecate */
+    var a = -Math.PI / 2 + (Math.random() - 0.5) * 2.7;
+    var rag = 0.655 + Math.random() * 0.02;
+    g.position.set(Math.cos(a) * rag, Y_ORLO + 0.06, Math.sin(a) * rag);
+    g.scale.y = 1.5 + Math.random();                  /* goccia allungata */
+    G.gFx.add(g);
+    (function (g, d) {
+      gsap.to(g.position, { y: 0.02, duration: 1.05 + Math.random() * 0.5, delay: d,
+        ease: 'power1.in' });
+      gsap.to(g.scale, { x: 0.2, y: 0.2, z: 0.2, duration: 0.35, delay: d + 0.95,
+        onComplete: function () { G.gFx.remove(g); g.geometry.dispose(); g.material.dispose(); } });
+    })(g, i * 0.045 + Math.random() * 0.12);
+  }
+}
+
+/* pozza sul banco, attorno alla base */
+function pozza(colore) {
+  if (!window.gsap) return null;
+  var cv = document.createElement('canvas'); cv.width = cv.height = 128;
+  var cx = cv.getContext('2d');
+  var gr = cx.createRadialGradient(64, 64, 8, 64, 64, 64);
+  gr.addColorStop(0, 'rgba(255,255,255,.85)');
+  gr.addColorStop(0.65, 'rgba(255,255,255,.45)');
+  gr.addColorStop(1, 'rgba(255,255,255,0)');
+  cx.fillStyle = gr; cx.fillRect(0, 0, 128, 128);
+  var tex = new THREE.CanvasTexture(cv);
+  /* scurita rispetto alla bevanda: una macchia bagnata sul
+     banco è più scura del piano, mentre col colore tal quale
+     (un latte chiaro) spariva sul crema del bancone */
+  var tinta = new THREE.Color(col(colore)).multiplyScalar(0.42);
+  var m = new THREE.Mesh(
+    new THREE.PlaneGeometry(2.6, 2.6),
+    new THREE.MeshBasicMaterial({ map: tex, color: tinta, transparent: true,
+      opacity: 0, depthWrite: false })
+  );
+  m.rotation.x = -Math.PI / 2;
+  m.position.y = 0.006;
+  m.scale.setScalar(0.35);
+  G.gFx.add(m);
+  gsap.to(m.scale, { x: 1, y: 1, z: 1, duration: 1.5, ease: 'power2.out' });
+  gsap.to(m.material, { opacity: 0.62, duration: 0.7, ease: 'power1.out' });
+  return m;
+}
+
+function tracimazione() {
+  if (tracimando) return;
+  tracimando = true;
+  insistenze = 0;
+
+  var h = document.getElementById('hint');
+  if (h) h.textContent = 'Troppo pieno — il bicchiere è tracimato';
+
+  var liquido = altezze().mist > 0.05;
+  var tinta = liquido ? coloreMisto() : 0xF3E7D2;
+
+  if (!window.gsap || REDUCED) {                       /* senza animazioni: svuota e basta */
+    svuota(); tracimando = false; return;
+  }
+
+  trema(14);
+  document.querySelectorAll('.prod').forEach(function (el) {
+    gsap.fromTo(el, { x: -2 }, { x: 0, duration: 0.7, ease: 'elastic.out(1,0.3)' });
+  });
+
+  /* 1 — il livello monta fino all'orlo.
+     Gonfio solo lo strato più in alto fra quelli visibili: se
+     li alzassi tutti si compenetrerebbero. E lo porto proprio
+     al bordo, non di un tot — un aumento relativo su un
+     bicchiere mezzo pieno non arrivava mai a tracimare e
+     l'effetto non si leggeva.                                */
+  var cima = G.schiumaCorpo.visible ? null
+           : G.misto.visible ? G.misto
+           : G.pistacchio.visible ? G.pistacchio
+           : G.nutella.visible ? G.nutella : null;
+  if (cima) {
+    gsap.to(cima.scale, { y: Math.max((Y_ORLO + 0.05) - cima.position.y, 0.02),
+      duration: 0.42, ease: 'power2.out', overwrite: true });
+  } else if (G.schiumaCorpo.visible) {
+    /* con la schiuma: il corpo sale al bordo e la cupola gli
+       monta sopra allargandosi, come un cappello che sborda  */
+    gsap.to(G.schiumaCorpo.scale, { y: Math.max((Y_ORLO - 0.06) - G.schiumaCorpo.position.y, 0.02),
+      duration: 0.42, ease: 'power2.out', overwrite: true });
+    gsap.to(G.schiumaCupola.scale, { x: R_INT * 1.15, z: R_INT * 1.15, y: 0.22,
+      duration: 0.45, ease: 'power2.out', overwrite: true });
+    gsap.to(G.schiumaCupola.position, { y: Y_ORLO - 0.06, duration: 0.45, ease: 'power2.out', overwrite: true });
+    if (G.misto.visible) {
+      gsap.to(G.misto.scale, { y: Math.max((Y_ORLO - 0.30) - G.misto.position.y, 0.02),
+        duration: 0.42, ease: 'power2.out', overwrite: true });
+    }
+  }
+  onda(3.4);
+
+  /* 2 — solidi scavalcati fuori dal bordo */
+  function espelli(arr, gruppo, ritardo, forza) {
+    arr.forEach(function (it, i) {
+      var m = it.m || it;
+      gsap.killTweensOf(m.position); gsap.killTweensOf(m.rotation); gsap.killTweensOf(m.scale);
+      var a = Math.atan2(m.position.z, m.position.x) + (Math.random() - 0.5) * 1.2;
+      var fuori = 0.95 + Math.random() * forza;
+      var d = ritardo + i * 0.035;
+      gsap.timeline({ delay: d })
+        .to(m.position, { y: Y_ORLO + 0.35 + Math.random() * 0.3, duration: 0.32, ease: 'power2.out' })
+        .to(m.position, { x: Math.cos(a) * fuori, z: Math.sin(a) * fuori, y: -1.6,
+          duration: 0.85, ease: 'power1.in',
+          onComplete: function () { gruppo.remove(m); } }, '>-0.02');
+      gsap.to(m.position, { x: Math.cos(a) * fuori * 0.55, z: Math.sin(a) * fuori * 0.55,
+        duration: 0.32, delay: d, ease: 'power2.out' });
+      gsap.to(m.rotation, { x: m.rotation.x + (Math.random() - 0.5) * 7,
+        z: m.rotation.z + (Math.random() - 0.5) * 7, duration: 1.15, delay: d, ease: 'power1.out' });
+    });
+    arr.length = 0;
+  }
+  espelli(ghiaccioEls, G.gGhiaccio, 0.18, 0.5);
+  espelli(granellaEls, G.granelli, 0.22, 0.9);
+  bolleEls.forEach(function (b) {
+    gsap.killTweensOf(b.scale);
+    gsap.to(b.scale, { x: 0.001, y: 0.001, z: 0.001, duration: 0.3,
+      onComplete: function () { G.gFx.remove(b); b.geometry.dispose(); b.material.dispose(); } });
+  });
+  bolleEls.length = 0;
+
+  colatura(tinta, liquido ? 16 : 6);
+  var pz = pozza(tinta);
+
+  /* 3 — il bicchiere si svuota e il banco si ripulisce */
+  gsap.delayedCall(0.95, function () {
+    svuota();
+    if (h) h.textContent = 'Bicchiere svuotato — si ricomincia';
+  });
+  gsap.delayedCall(2.6, function () {
+    if (pz) gsap.to(pz.material, { opacity: 0, duration: 1.1, ease: 'power1.in',
+      onComplete: function () { G.gFx.remove(pz); pz.geometry.dispose();
+        pz.material.map.dispose(); pz.material.dispose(); } });
+  });
+  gsap.delayedCall(3.9, function () {
+    tracimando = false;
+    aggiornaHint(0);
+  });
+}
+
+/* ── 10. SCHEDE PRODOTTO ─────────────────────────────────── */
+function costruisciScaffale() {
+  var host = document.getElementById('shelf');
+  host.innerHTML = REFERENZE.map(function (r) {
+    return '<button class="prod" type="button" data-id="' + r.id + '" aria-label="Aggiungi ' + r.nome + '">' +
+      '<div class="prod-art">' +
+        '<canvas data-art="' + r.id + '"></canvas>' +
+        (r.tag ? '<span class="prod-tag ' + r.tagCls + '">' + r.tag + '</span>' : '') +
+        '<span class="prod-qty" data-id="' + r.id + '"></span>' +
+      '</div>' +
+      '<div class="prod-body">' +
+        '<div class="prod-code">' + r.codice + '</div>' +
+        '<div class="prod-name">' + r.nome + '</div>' +
+        '<div class="prod-sub">' + r.sub + '</div>' +
+        '<div class="nutri"><div class="nutri-h">Valori dichiarati</div>' +
+          r.nutri.map(function (n) { return '<div class="nrow"><span>' + n[0] + '</span><span>' + n[1] + '</span></div>'; }).join('') +
+        '</div>' +
+        '<div class="prod-bar">' + barcodeSVG(r.codice) + '</div>' +
+        '<div class="prod-foot">' +
+          '<div><div class="prod-price">&euro; ' + r.prezzo.toFixed(2).replace('.', ',') + '</div>' +
+          '<div class="prod-unit">/ ' + r.unita + ' &middot; max ' + r.max + '</div></div>' +
+          '<span class="prod-add" data-id="' + r.id + '">+</span>' +
+        '</div>' +
+      '</div></button>';
+  }).join('');
+
+  /* artwork 2D delle etichette (nitido su schermi retina) */
+  REFERENZE.forEach(function (r) {
+    var c = host.querySelector('canvas[data-art="' + r.id + '"]');
+    if (!c) return;
+    var dpr = Math.min(devicePixelRatio, 2);
+    var w = c.clientWidth || 240, h = c.clientHeight || 104;
+    c.width = w * dpr; c.height = h * dpr;
+    var x = c.getContext('2d'); x.scale(dpr, dpr);
+    /* etichetta a proporzione larga: disegno quadrato e ritaglio al centro */
+    var tmp = document.createElement('canvas'); tmp.width = tmp.height = 320;
+    disegnaEtichetta(tmp.getContext('2d'), r, 320, 320);
+    x.drawImage(tmp, 0, 44, 320, 232, 0, 0, w, h);
+  });
+
+  host.querySelectorAll('.prod').forEach(function (el) {
+    el.addEventListener('click', function () {
+      var id = el.dataset.id;
+      if (window.gsap) {
+        gsap.timeline()
+          .to(el, { scale: 0.985, duration: 0.1, ease: 'power2.out' })
+          .to(el, { scale: 1, duration: 0.3, ease: 'back.out(3)' });
+      }
+      aggiungi(id);
+    });
+  });
+}
+
+/* ── 11. MISCELE (ricette one-click) ─────────────────────── */
+function costruisciMiscele() {
+  var host = document.getElementById('mixGrid');
+  host.innerHTML = MISCELE.map(function (m, i) {
+    return '<button class="mix" type="button" data-i="' + i + '">' +
+      '<div class="mix-n">' + m.n + '</div>' +
+      '<div class="mix-name">' + m.nome + '</div>' +
+      '<div class="mix-d">' + m.d + '</div>' +
+      '<div class="mix-tags">' + m.tags.map(function (t) { return '<i>' + t + '</i>'; }).join('') + '</div>' +
+      '<div class="mix-go">Componi questo profilo &rarr;</div>' +
+      '</button>';
+  }).join('');
+
+  host.querySelectorAll('.mix').forEach(function (el) {
+    el.addEventListener('click', function () {
+      var m = MISCELE[+el.dataset.i];
+      svuota();
+      document.getElementById('bancone').scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });
+      /* versa le dosi una alla volta, così si vede comporre */
+      var passi = [];
+      Object.keys(m.ric).forEach(function (id) {
+        for (var i = 0; i < m.ric[id]; i++) passi.push(id);
+      });
+      var ordine = ['nutella','pistacchio','latte','caffe','ghiaccio','schiuma','granella'];
+      passi.sort(function (a, b) { return ordine.indexOf(a) - ordine.indexOf(b); });
+      passi.forEach(function (id, i) {
+        setTimeout(function () { aggiungi(id); }, 900 + i * (REDUCED ? 60 : 420));
+      });
+      apriModale(m, passi.length);
+    });
+  });
+}
+
+/* ── 12. SCONTRINO ───────────────────────────────────────── */
+function eur(n) { return '€ ' + n.toFixed(2).replace('.', ','); }
+
+function renderScontrino() {
+  var body = document.getElementById('contoBody');
+  var righe = REFERENZE.filter(function (r) { return stato[r.id] > 0; });
+
+  if (!righe.length) {
+    body.innerHTML = '<tr><td colspan="4" class="ct-empty">&mdash; nessuna competenza &middot; componi il tuo profilo al bancone &mdash;</td></tr>';
+    document.getElementById('tSub').textContent = eur(0);
+    document.getElementById('tIva').textContent = eur(0);
+    document.getElementById('tTot').textContent = eur(0);
+    document.getElementById('tGram').textContent = '0 g';
+    return;
+  }
+
+  var sub = 0, gr = 0;
+  body.innerHTML = righe.map(function (r) {
+    var q = stato[r.id], imp = r.prezzo * q;
+    sub += imp; gr += (GRAMMI[r.id] || 0) * q;
+    return '<tr>' +
+      '<td><span class="ct-name">' + r.nome + '</span><span class="ct-code">' + r.sub + '</span></td>' +
+      '<td style="font-size:.52rem;color:var(--ink3)">' + r.codice + '</td>' +
+      '<td><span class="qctl">' +
+        '<button class="qb" data-q="-1" data-id="' + r.id + '" type="button" aria-label="Togli una dose">&minus;</button>' +
+        '<span class="qn">' + q + '</span>' +
+        '<button class="qb" data-q="1" data-id="' + r.id + '" type="button" aria-label="Aggiungi una dose">+</button>' +
+      '</span></td>' +
+      '<td>' + eur(imp) + '</td></tr>';
+  }).join('');
+
+  var iva = sub * 0.10;
+  document.getElementById('tSub').textContent = eur(sub);
+  document.getElementById('tIva').textContent = eur(iva);
+  document.getElementById('tTot').textContent = eur(sub + iva);
+  document.getElementById('tGram').textContent = gr + ' g';
+
+  body.querySelectorAll('.qb').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var id = b.dataset.id, d = +b.dataset.q;
+      if (d > 0) { aggiungi(id); return; }
+      if (stato[id] > 0) {
+        stato[id]--;
+        if (id === 'ghiaccio') togliUltimo(ghiaccioEls, G.gGhiaccio, 2);
+        if (id === 'granella') togliUltimo(granellaEls, G.granelli, GRAN_PER_DOSE);
+        disponi(); aggiornaScheda(id); renderScontrino();
+      }
+    });
+  });
+}
+
+function togliUltimo(arr, gruppo, n) {
+  for (var i = 0; i < n && arr.length; i++) {
+    var it = arr.pop(), m = it.m || it;
+    if (window.gsap) {
+      gsap.killTweensOf(m.position); gsap.killTweensOf(m.rotation);
+      gsap.to(m.scale, { x: 0.001, y: 0.001, z: 0.001, duration: 0.35,
+        onComplete: function () { gruppo.remove(m); } });
+    } else gruppo.remove(m);
+  }
+}
+
+/* ── 13. MODALE ──────────────────────────────────────────── */
+function apriModale(m, dosi) {
+  var costo = 0;
+  Object.keys(m.ric).forEach(function (id) { costo += byId[id].prezzo * m.ric[id]; });
+  document.getElementById('boxIn').innerHTML =
+    '<h3>' + m.nome + '</h3>' +
+    '<div class="box-sub">&#10003; in preparazione al bancone</div>' +
+    Object.keys(m.ric).map(function (id) {
+      return '<div class="box-l">&rarr; ' + byId[id].nome + ' &middot; ' + m.ric[id] + ' dosi</div>';
+    }).join('') +
+    '<div class="box-f"><div><div class="box-p">' + eur(costo * 1.10) + '</div>' +
+    '<div style="font-size:.5rem;color:var(--ink3);margin-top:2px">' + dosi + ' dosi &middot; iva inclusa</div></div>' +
+    '<a class="box-go" href="#conto" data-close>&rarr; Scontrino</a></div>';
+  document.getElementById('ovl').classList.add('open');
+}
+function chiudiModale() { document.getElementById('ovl').classList.remove('open'); }
+
+/* ── 14. CONTORNO: ticker, cursore, reveal, meta ─────────── */
+function ticker() {
+  var voci = ['Content creation a taglio netto','<b>&#9733;</b>','Copywriting fresco di giornata','<b>&#9733;</b>',
+    'Strategia tostata a puntino','<b>&#9733;</b>','Brand design DOP di Bronte','<b>&#9733;</b>',
+    'Social sempre lucidi','<b>&#9733;</b>','Problem solving croccante','<b>&#9733;</b>',
+    'Public speaking a bolla fine','<b>&#9733;</b>','Servizio al banco','<b>&#9733;</b>',
+    'Scontrino non fiscale','<b>&#9733;</b>'];
+  var uno = voci.map(function (v) { return '<span>' + v + '</span>'; }).join('');
+  document.getElementById('tickIn').innerHTML = uno + uno;
+}
+
+function cursore() {
+  /* solo mouse vero: 'pointer: fine' esclude touch e penne grosse */
+  if (!window.matchMedia('(pointer: fine)').matches) return;
+  if ('ontouchstart' in window || navigator.maxTouchPoints > 0) return;
+  if (innerWidth < 700) return;
+  document.body.classList.add('cur-on');
+  var c = document.getElementById('cur'), r = document.getElementById('curRing');
+  var x = 0, y = 0, rx = 0, ry = 0;
+  addEventListener('mousemove', function (e) {
+    x = e.clientX; y = e.clientY;
+    c.style.transform = 'translate(' + x + 'px,' + y + 'px) translate(-50%,-50%)';
+  }, { passive: true });
+  (function loop() {
+    requestAnimationFrame(loop);
+    rx += (x - rx) * 0.14; ry += (y - ry) * 0.14;
+    r.style.transform = 'translate(' + rx + 'px,' + ry + 'px) translate(-50%,-50%)';
+  })();
+  document.addEventListener('pointerover', function (e) {
+    var hot = e.target.closest('a,button,.prod,.mix');
+    document.body.classList.toggle('cur-hot', !!hot);
+  });
+}
+
+function reveal() {
+  if (REDUCED || !window.gsap) {
+    document.querySelectorAll('.rv').forEach(function (el) { el.style.opacity = 1; el.style.transform = 'none'; });
+    return;
+  }
+  document.querySelectorAll('.rv').forEach(function (el) {
+    gsap.to(el, {
+      opacity: 1, y: 0, duration: 0.85, ease: 'power3.out',
+      scrollTrigger: window.ScrollTrigger ? { trigger: el, start: 'top 88%' } : undefined
+    });
+  });
+  /* se ScrollTrigger non è disponibile, mostra tutto subito */
+  if (!window.ScrollTrigger) {
+    document.querySelectorAll('.rv').forEach(function (el) { el.style.opacity = 1; el.style.transform = 'none'; });
+  }
+}
+
+function meta() {
+  var d = new Date();
+  var data = d.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  var ora = d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+  var n = String(Math.floor(Math.random() * 99999)).padStart(5, '0');
+  document.getElementById('headMeta').textContent = data + ' · ' + ora + ' · CASSA 01';
+  document.getElementById('footMeta').textContent = 'SCONTRINO N. ' + n + ' · OPERATORE: BANCONE';
+}
+
+/* ── 15. AVVIO ───────────────────────────────────────────── */
+function avvia() {
+  if (typeof THREE === 'undefined') {
+    var l = document.getElementById('load');
+    if (l) l.textContent = 'Three.js non caricato — controlla la connessione.';
+    return;
+  }
+  ticker(); meta(); cursore();
+  costruisciScaffale(); costruisciMiscele(); renderScontrino();
+  scenaHero(); scenaBancone();
+  disponi(false);
+  reveal();
+
+  document.getElementById('resetBtn').addEventListener('click', svuota);
+  document.getElementById('boxX').addEventListener('click', chiudiModale);
+  document.getElementById('ovl').addEventListener('click', function (e) {
+    if (e.target.id === 'ovl' || e.target.hasAttribute('data-close')) chiudiModale();
+  });
+  addEventListener('keydown', function (e) { if (e.key === 'Escape') chiudiModale(); });
+
+  document.getElementById('printBtn').addEventListener('click', function () {
+    if (!pieno()) { alert('Il bicchiere è vuoto: aggiungi almeno una referenza dal bancone.'); return; }
+    window.print();
+  });
+
+  if (window.gsap && !REDUCED) {
+    gsap.from('.hero-eyebrow', { opacity: 0, y: 16, duration: 0.8, delay: 0.15 });
+    gsap.from('.hero-t', { opacity: 0, y: 26, duration: 0.9, delay: 0.28 });
+    gsap.from('.hero-rule', { scaleX: 0, duration: 0.8, delay: 0.5 });
+    gsap.from('.hero-p', { opacity: 0, y: 16, duration: 0.8, delay: 0.6 });
+    gsap.from('.hero-cta', { opacity: 0, y: 16, duration: 0.8, delay: 0.75 });
+  }
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', avvia);
+else avvia();
+
+})();
+</script>
+</body>
+</html>
