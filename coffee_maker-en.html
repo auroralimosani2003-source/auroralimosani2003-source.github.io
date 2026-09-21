@@ -1,0 +1,2202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#F2ECE0">
+<title>Espresso Yourself — Skills Bar Portfolio</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Playfair+Display:ital,wght@0,500;1,500&display=swap">
+
+<style>
+/* ═══════════════════════════════════════════════════════════
+   TOKENS — change the colors here and the whole page changes
+   ═══════════════════════════════════════════════════════════ */
+:root{
+  --paper:#F2ECE0;      /* background paper        */
+  --paper2:#E7DDC9;     /* dark paper / panels     */
+  --cream:#FAF6EE;      /* warm white              */
+  --ink:#14110E;        /* ink                     */
+  --ink2:#443B31;       /* secondary text          */
+  --ink3:#8B7F70;       /* tertiary text           */
+  --red:#B8342C;        /* bar red                 */
+  --gold:#C39237;       /* brass                   */
+  --gold2:#E3BC65;      /* light brass             */
+  --line:rgba(20,17,14,.14);
+  --line2:rgba(20,17,14,.07);
+  --pad:clamp(1.2rem,5vw,5rem);
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit;color:inherit;background:none;border:none;}
+canvas{display:block;}
+
+/* paper grain */
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:60;opacity:.5;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+}
+
+/* ── CUSTOM CURSOR (desktop only) ────────────────────────── */
+body.cur-on,body.cur-on a,body.cur-on button{cursor:none;}
+#cur{position:fixed;top:0;left:0;width:9px;height:9px;background:var(--red);border-radius:50%;
+  pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:multiply;display:none;}
+#curRing{position:fixed;top:0;left:0;width:34px;height:34px;border:1px solid var(--ink);border-radius:50%;
+  pointer-events:none;z-index:9998;transform:translate(-50%,-50%);display:none;
+  transition:width .28s ease,height .28s ease,border-color .28s ease;}
+body.cur-on #cur,body.cur-on #curRing{display:block;}
+body.cur-hot #curRing{width:50px;height:50px;border-color:var(--red);}
+
+/* ── HEADER ──────────────────────────────────────────────── */
+#head{
+  position:fixed;top:0;left:0;right:0;z-index:100;height:60px;
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:0 var(--pad);
+  border-bottom:1px solid var(--line);
+  background:rgba(242,236,224,.9);backdrop-filter:blur(14px);
+}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.45rem;letter-spacing:.12em;white-space:nowrap;}
+.logo i{font-style:normal;color:var(--red);}
+#head nav{display:flex;gap:clamp(.9rem,2.2vw,2.2rem);}
+#head nav a{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;
+  color:var(--ink3);transition:color .2s;white-space:nowrap;}
+#head nav a:hover{color:var(--ink);}
+.head-meta{font-size:.55rem;letter-spacing:.1em;color:var(--ink3);text-align:right;white-space:nowrap;}
+
+/* ── HERO ────────────────────────────────────────────────── */
+#hero{position:relative;min-height:100svh;padding-top:60px;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;}
+#heroCanvas{position:absolute;inset:0;width:100%;height:100%;}
+.hero-in{position:relative;z-index:2;text-align:center;padding:0 1.4rem;width:100%;pointer-events:none;}
+.hero-in a{pointer-events:auto;}
+.hero-eyebrow{font-size:.6rem;letter-spacing:.34em;text-transform:uppercase;color:var(--gold);margin-bottom:1.1rem;}
+.hero-t{font-family:'Bebas Neue',sans-serif;font-size:clamp(4rem,11vw,10rem);line-height:.86;letter-spacing:.03em;}
+.hero-t em{font-family:'Playfair Display',serif;font-style:italic;font-weight:500;font-size:.5em;
+  color:var(--red);display:block;letter-spacing:0;margin-top:.14em;}
+.hero-rule{width:52px;height:1px;background:var(--red);margin:1.6rem auto;}
+.hero-p{font-size:.72rem;line-height:2;color:var(--ink2);max-width:36ch;margin:0 auto;}
+.hero-cta{display:inline-block;margin-top:2.2rem;padding:.85rem 2.3rem;background:var(--ink);color:var(--paper);
+  text-decoration:none;font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;transition:background .25s;}
+.hero-cta:hover{background:var(--red);}
+.hero-scroll{position:absolute;bottom:1.8rem;left:50%;transform:translateX(-50%);z-index:2;
+  display:flex;flex-direction:column;align-items:center;gap:.5rem;font-size:.52rem;letter-spacing:.2em;color:var(--ink3);}
+.hero-scroll b{display:block;width:1px;height:44px;background:linear-gradient(var(--ink3),transparent);}
+
+/* ── TICKER ──────────────────────────────────────────────── */
+#ticker{background:var(--ink);overflow:hidden;padding:.5rem 0;position:relative;z-index:10;}
+.tick-in{display:flex;white-space:nowrap;width:max-content;animation:tick 36s linear infinite;}
+.tick-in span{font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;padding:0 2.2rem;
+  color:rgba(250,246,238,.6);flex-shrink:0;}
+.tick-in span b{color:var(--gold2);font-weight:400;}
+@keyframes tick{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+/* ── SECTIONS ────────────────────────────────────────────── */
+section{padding:clamp(3.4rem,7vw,6.5rem) var(--pad);}
+.slab{font-size:.56rem;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);
+  display:flex;align-items:center;gap:.9rem;margin-bottom:.9rem;}
+.slab::before{content:'';width:22px;height:1px;background:var(--gold);flex:0 0 22px;}
+.stitle{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.4rem,5.4vw,4.6rem);line-height:.98;letter-spacing:.05em;}
+
+/* ── COUNTER ─────────────────────────────────────────────── */
+#bancone{background:var(--cream);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.ban-head{display:flex;justify-content:space-between;align-items:flex-end;gap:2rem;flex-wrap:wrap;margin-bottom:2.6rem;}
+.ban-head p{font-size:.7rem;line-height:1.9;color:var(--ink2);margin-top:1rem;max-width:40ch;}
+.ban-count{text-align:right;}
+.ban-count small{font-size:.55rem;letter-spacing:.16em;color:var(--ink3);text-transform:uppercase;}
+.ban-count b{font-family:'Bebas Neue',sans-serif;font-size:3.2rem;font-weight:400;display:block;line-height:1;}
+.ban-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);border:1px solid var(--line);}
+
+/* the panel stays pinned to the top while the shelf scrolls */
+/* z-index needed: the cards come later in the DOM, and without
+   an explicit level they would scroll OVER the pinned panel */
+.stage-panel{border-right:1px solid var(--line);background:var(--paper2);display:flex;flex-direction:column;
+  position:sticky;top:60px;align-self:start;z-index:5;}
+.stage-bar,.stage-foot{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.62rem .9rem;
+  font-size:.52rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink3);}
+.stage-bar{border-bottom:1px solid var(--line);}
+.stage-foot{border-top:1px solid var(--line);text-transform:none;letter-spacing:.06em;}
+.stage-bar b{font-weight:400;color:var(--red);font-variant-numeric:tabular-nums;}
+#stage{position:relative;height:clamp(340px,54vh,500px);touch-action:none;}
+#glc{width:100%;height:100%;}
+#load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;font-style:italic;color:var(--ink3);font-size:.85rem;pointer-events:none;}
+#hint{font-family:'Playfair Display',serif;font-style:italic;font-size:.74rem;color:var(--ink3);}
+.reset{border:1px solid var(--line);padding:.42rem 1rem;font-size:.54rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--ink3);cursor:pointer;flex:0 0 auto;
+  transition:background .2s,color .2s,border-color .2s;}
+.reset:hover{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+
+/* shelf */
+.shelf{display:grid;grid-template-columns:1fr 1fr;background:var(--cream);}
+.prod{position:relative;border-right:1px solid var(--line);border-bottom:1px solid var(--line);
+  text-align:left;overflow:hidden;cursor:pointer;transition:background .25s;display:flex;flex-direction:column;}
+.prod:nth-child(2n){border-right:none;}
+.prod:hover{background:#fff;}
+.prod:focus-visible{outline:2px solid var(--red);outline-offset:-2px;}
+.prod::after{content:'';position:absolute;left:0;bottom:0;height:2px;width:0;background:var(--red);transition:width .38s ease;}
+.prod:hover::after{width:100%;}
+.prod-art{position:relative;height:104px;border-bottom:1px solid var(--line);background:var(--paper2);overflow:hidden;}
+.prod-art canvas{width:100%;height:100%;}
+.prod-tag{position:absolute;top:9px;left:9px;font-size:.46rem;letter-spacing:.16em;text-transform:uppercase;
+  background:var(--ink);color:var(--paper);padding:2px 6px;}
+.prod-tag.red{background:var(--red);}
+.prod-tag.gold{background:var(--gold);color:var(--ink);}
+.prod-qty{position:absolute;top:8px;right:8px;min-width:20px;height:20px;padding:0 5px;
+  display:flex;align-items:center;justify-content:center;background:var(--red);color:#fff;
+  font-size:.56rem;font-weight:600;opacity:0;font-variant-numeric:tabular-nums;}
+.prod-body{padding:.85rem .9rem 1rem;display:flex;flex-direction:column;flex:1;}
+.prod-code{font-size:.48rem;letter-spacing:.1em;color:var(--ink3);}
+.prod-name{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.05em;line-height:1.05;margin:.2rem 0 .12rem;}
+.prod-sub{font-size:.56rem;line-height:1.7;color:var(--ink2);min-height:2.7em;}
+.nutri{border-top:2px solid var(--ink);border-bottom:1px solid var(--ink);margin:.7rem 0 .55rem;padding:.3rem 0;}
+.nutri-h{font-family:'Bebas Neue',sans-serif;font-size:.8rem;letter-spacing:.07em;
+  border-bottom:1px solid var(--ink);padding-bottom:.18rem;margin-bottom:.28rem;}
+.nrow{display:flex;justify-content:space-between;gap:.6rem;font-size:.52rem;padding:1px 0;
+  border-bottom:.5px solid var(--line2);font-variant-numeric:tabular-nums;}
+.nrow:last-child{border-bottom:none;}
+.prod-bar{margin:.35rem 0 .5rem;}
+.prod-bar svg{width:100%;height:24px;color:var(--ink);}
+.prod-foot{display:flex;align-items:flex-end;justify-content:space-between;gap:.6rem;
+  border-top:1px solid var(--line);padding-top:.62rem;margin-top:auto;}
+.prod-price{font-family:'Bebas Neue',sans-serif;font-size:1.45rem;color:var(--red);letter-spacing:.03em;line-height:1;}
+.prod-unit{font-size:.47rem;color:var(--ink3);margin-top:1px;}
+.prod-add{width:34px;height:34px;flex:0 0 34px;border:1px solid var(--ink);
+  display:flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer;
+  transition:background .2s,color .2s,border-color .2s;}
+.prod-add:hover{background:var(--ink);color:var(--paper);}
+.prod-add.on{background:var(--red);border-color:var(--red);color:#fff;}
+
+/* ── PROFILES (portfolio) ────────────────────────────────── */
+.mix-head{display:flex;justify-content:space-between;align-items:flex-end;gap:2rem;flex-wrap:wrap;margin-bottom:2.6rem;}
+.mix-head p{font-size:.7rem;line-height:1.9;color:var(--ink2);margin-top:1rem;max-width:42ch;}
+.mix-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));border:1px solid var(--line);border-bottom:none;}
+.mix{position:relative;text-align:left;padding:1.5rem 1.3rem 1.3rem;cursor:pointer;
+  border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--paper);
+  transition:background .3s,color .3s;display:flex;flex-direction:column;gap:.7rem;}
+.mix:last-child{border-right:none;}
+.mix:hover{background:var(--ink);color:var(--paper);}
+.mix:focus-visible{outline:2px solid var(--red);outline-offset:-2px;}
+.mix-n{font-family:'Bebas Neue',sans-serif;font-size:2.6rem;line-height:.9;color:var(--gold);letter-spacing:.04em;}
+.mix-name{font-family:'Bebas Neue',sans-serif;font-size:1.45rem;letter-spacing:.05em;line-height:1.05;}
+.mix-d{font-size:.58rem;line-height:1.85;color:var(--ink2);transition:color .3s;flex:1;}
+.mix:hover .mix-d{color:rgba(250,246,238,.62);}
+.mix-tags{display:flex;flex-wrap:wrap;gap:.3rem;}
+.mix-tags i{font-style:normal;font-size:.46rem;letter-spacing:.14em;text-transform:uppercase;
+  border:1px solid var(--line);padding:2px 6px;color:var(--ink3);transition:border-color .3s,color .3s;}
+.mix:hover .mix-tags i{border-color:rgba(250,246,238,.24);color:rgba(250,246,238,.6);}
+.mix-go{font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:var(--red);
+  border-top:1px solid var(--line);padding-top:.7rem;transition:color .3s,border-color .3s;}
+.mix:hover .mix-go{color:var(--gold2);border-color:rgba(250,246,238,.24);}
+
+/* ── RECEIPT ─────────────────────────────────────────────── */
+#conto{background:var(--ink);color:var(--paper);}
+#conto .slab{color:var(--gold);}
+#conto .slab::before{background:var(--gold);}
+.conto-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,320px);
+  gap:clamp(2rem,5vw,4rem);align-items:start;margin-top:2.4rem;}
+.conto-t{width:100%;border-collapse:collapse;}
+.conto-t th{font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3);
+  padding:.7rem 0;border-bottom:1px solid rgba(250,246,238,.13);text-align:left;font-weight:400;}
+.conto-t th:last-child,.conto-t td:last-child{text-align:right;}
+.conto-t td{padding:.8rem 0;border-bottom:1px solid rgba(250,246,238,.06);font-size:.65rem;vertical-align:middle;}
+.conto-t td:last-child{color:var(--gold2);font-weight:600;font-variant-numeric:tabular-nums;}
+.ct-name{color:var(--paper);}
+.ct-code{display:block;font-size:.48rem;color:var(--ink3);margin-top:2px;}
+.ct-empty{text-align:center;padding:3rem 1rem;color:rgba(250,246,238,.24);font-size:.65rem;letter-spacing:.14em;}
+.qctl{display:inline-flex;align-items:center;gap:.5rem;}
+.qb{width:24px;height:24px;border:1px solid rgba(250,246,238,.2);color:var(--paper);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:background .15s;}
+.qb:hover{background:rgba(250,246,238,.12);}
+.qn{min-width:18px;text-align:center;font-variant-numeric:tabular-nums;}
+.tot{border-top:1px solid rgba(250,246,238,.16);padding-top:1.4rem;}
+.tot-r{display:flex;justify-content:space-between;gap:1rem;font-size:.65rem;padding:.35rem 0;
+  color:rgba(250,246,238,.5);font-variant-numeric:tabular-nums;}
+.tot-r.big{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:.05em;color:var(--paper);
+  border-top:1px solid rgba(250,246,238,.2);margin-top:.7rem;padding-top:.7rem;}
+.tot-r.big span:last-child{color:var(--gold2);}
+.tot-note{font-size:.5rem;letter-spacing:.1em;color:var(--ink3);margin-top:1rem;line-height:1.9;}
+.tot-cta{display:block;width:100%;margin-top:1.4rem;padding:1rem;background:var(--red);color:#fff;cursor:pointer;
+  font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.26em;text-transform:uppercase;
+  transition:opacity .2s,transform .12s;}
+.tot-cta:hover{opacity:.88;}
+.tot-cta:active{transform:scale(.99);}
+
+/* ── FOOTER ──────────────────────────────────────────────── */
+footer{background:var(--paper2);border-top:1px solid var(--line);
+  padding:clamp(2.2rem,5vw,3.6rem) var(--pad);
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2.2rem;}
+.fc-t{font-size:.56rem;letter-spacing:.24em;text-transform:uppercase;color:var(--ink3);margin-bottom:1rem;}
+.fc p,.fc a{font-size:.62rem;line-height:2;color:var(--ink2);text-decoration:none;display:block;}
+.fc a:hover{color:var(--ink);}
+.fbot{background:var(--ink);color:rgba(250,246,238,.26);padding:1rem var(--pad);
+  display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;font-size:.5rem;letter-spacing:.1em;}
+
+/* ── MODAL ───────────────────────────────────────────────── */
+#ovl{position:fixed;inset:0;background:rgba(20,17,14,.62);backdrop-filter:blur(6px);z-index:1000;
+  display:none;align-items:center;justify-content:center;padding:1.2rem;}
+#ovl.open{display:flex;}
+#box{background:var(--cream);padding:clamp(1.6rem,4vw,2.6rem);max-width:440px;width:100%;position:relative;}
+#box h3{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.05em;line-height:1;}
+.box-x{position:absolute;top:1rem;right:1rem;font-size:1.1rem;color:var(--ink3);cursor:pointer;line-height:1;}
+.box-sub{color:var(--red);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;margin:.5rem 0 1.2rem;}
+.box-l{font-size:.58rem;line-height:1.9;color:var(--ink2);padding:.42rem 0;border-bottom:.5px dashed var(--line);}
+.box-f{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;margin-top:1.5rem;}
+.box-p{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;color:var(--red);line-height:1;}
+.box-go{font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;padding:.7rem 1.3rem;
+  background:var(--ink);color:var(--paper);text-decoration:none;}
+
+/* ── REVEAL ──────────────────────────────────────────────── */
+.rv{opacity:0;transform:translateY(26px);}
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+@media (max-width:960px){
+  .ban-grid{grid-template-columns:1fr;}
+  .stage-panel{border-right:none;border-bottom:1px solid var(--line);}
+  .conto-wrap{grid-template-columns:1fr;}
+  .mix{border-right:none;}
+}
+@media (max-width:560px){
+  #head{height:52px;}
+  .logo{font-size:1.1rem;}
+  .logo-tail{display:none;}          /* the spelled-out name doesn't fit next to the nav */
+  #head nav{gap:.85rem;}
+  #head nav a{font-size:.52rem;letter-spacing:.1em;}
+  .head-meta{display:none;}
+  #hero{padding-top:52px;align-items:flex-end;}
+  .hero-in{padding-bottom:4.5rem;}
+  .shelf{grid-template-columns:1fr;}
+  .prod{border-right:none;}
+  /* on phones the glass stays pinned under the header,
+     otherwise you add an item without seeing the effect */
+  .stage-panel{top:52px;box-shadow:0 12px 24px -18px rgba(20,17,14,.5);}
+  #stage{height:clamp(230px,34vh,300px);}
+  .conto-t th:nth-child(2),.conto-t td:nth-child(2){display:none;}
+  .tot-r.big{font-size:1.7rem;}
+}
+@media (prefers-reduced-motion:reduce){
+  .tick-in{animation:none;}
+  html{scroll-behavior:auto;}
+  .rv{opacity:1;transform:none;}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="curRing"></div>
+
+<!-- ══ HEADER ══════════════════════════════════════════════ -->
+<header id="head">
+  <div class="logo">CREATIVE <i>&#9733;</i> <span class="logo-tail">BAR</span></div>
+  <nav>
+    <a href="#bancone">Counter</a>
+    <a href="#miscele">Profiles</a>
+    <a href="#conto">Receipt</a>
+  </nav>
+  <div class="head-meta" id="headMeta"></div>
+</header>
+
+<!-- ══ HERO ════════════════════════════════════════════════ -->
+<section id="hero">
+  <canvas id="heroCanvas"></canvas>
+  <div class="hero-in">
+    <div class="hero-eyebrow">Personal Branding &amp; Portfolio &mdash; Skills Department</div>
+    <h1 class="hero-t">BUILD<br><em>your Creative Coffee</em></h1>
+    <div class="hero-rule"></div>
+    <a href="#bancone" class="hero-cta">&rarr; Go to the counter</a>
+  </div>
+  <div class="hero-scroll"><b></b>SCROLL</div>
+</section>
+
+<!-- ══ TICKER ══════════════════════════════════════════════ -->
+<div id="ticker" aria-hidden="true"><div class="tick-in" id="tickIn"></div></div>
+
+<!-- ══ BANCONE ═════════════════════════════════════════════ -->
+<section id="bancone">
+  <div class="ban-head rv">
+    <div>
+      <div class="slab">Skills department &mdash; service at the counter</div>
+      <h2 class="stitle">THE COUNTER</h2>
+      <p>Every skill has its own measure. Click more times to increase the dose: the mix builds up in the right order, whatever your goal is.</p>
+    </div>
+    <div class="ban-count">
+      <small>Skills on the shelf</small>
+      <b>07</b>
+    </div>
+  </div>
+
+  <div class="ban-grid rv">
+    <div class="stage-panel">
+      <div class="stage-bar">
+        <span>Fig. 01 &mdash; the mix, cross-section</span>
+        <b id="fillPct">0% full</b>
+      </div>
+      <div id="stage">
+        <canvas id="glc"></canvas>
+        <div id="load">Preparing the glass&hellip;</div>
+      </div>
+      <div class="stage-foot">
+        <span id="hint">The glass is empty</span>
+        <button class="reset" id="resetBtn" type="button">Empty</button>
+      </div>
+    </div>
+    <div class="shelf" id="shelf"></div>
+  </div>
+</section>
+
+<!-- ══ PROFILES ════════════════════════════════════════════ -->
+<section id="miscele">
+  <div class="mix-head rv">
+    <div>
+      <div class="slab">Ready-made role kits</div>
+      <h2 class="stitle">THE PROFILES</h2>
+      <p>Four already-balanced profiles. Pick one and the counter builds it on its own, skill by skill, right before your eyes.</p>
+    </div>
+  </div>
+  <div class="mix-grid rv" id="mixGrid"></div>
+</section>
+
+<!-- ══ RECEIPT ═════════════════════════════════════════════ -->
+<section id="conto">
+  <div class="rv">
+    <div class="slab">Profile summary</div>
+    <h2 class="stitle">THE RECEIPT</h2>
+  </div>
+  <div class="conto-wrap">
+    <table class="conto-t">
+      <thead>
+        <tr><th>Skill</th><th>Code</th><th>Amount</th><th>Value</th></tr>
+      </thead>
+      <tbody id="contoBody">
+        <tr><td colspan="4" class="ct-empty">&mdash; no skills yet &middot; build your profile at the counter &mdash;</td></tr>
+      </tbody>
+    </table>
+    <div>
+      <div class="tot">
+        <div class="tot-r"><span>Subtotal</span><span id="tSub">&euro; 0,00</span></div>
+        <div class="tot-r"><span>VAT 10%</span><span id="tIva">&euro; 0,00</span></div>
+        <div class="tot-r"><span>Total weight</span><span id="tGram">0 g</span></div>
+        <div class="tot-r big"><span>TOTAL</span><span id="tTot">&euro; 0,00</span></div>
+      </div>
+      <p class="tot-note" id="totNote">Not a fiscal receipt. Profile best put into practice right away.</p>
+      <button class="tot-cta" id="printBtn" type="button">&#9654; Print receipt</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══════════════════════════════════════════════ -->
+<footer id="foot">
+  <div class="fc rv">
+    <div class="fc-t">Espresso Yourself</div>
+    <p>A counter that works like a supermarket: choose the skills, check the weight, head to checkout.</p>
+  </div>
+  <div class="fc rv">
+    <div class="fc-t">Sections</div>
+    <a href="#hero">Entrance</a>
+    <a href="#bancone">Counter</a>
+    <a href="#miscele">Profiles</a>
+    <a href="#conto">Checkout</a>
+  </div>
+  <div class="fc rv">
+    <div class="fc-t">Availability</div>
+    <p>Monday &ndash; Friday &middot; always reachable<br>New projects &middot; starting right away</p>
+  </div>
+</footer>
+<div class="fbot">
+  <span>&copy; Espresso Yourself &mdash; Skills Bar Portfolio</span>
+  <span id="footMeta"></span>
+</div>
+
+<!-- ══ MODAL ═══════════════════════════════════════════════ -->
+<div id="ovl">
+  <div id="box">
+    <button class="box-x" id="boxX" type="button" aria-label="Close">&#10005;</button>
+    <div id="boxIn"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════════════
+   ICED COFFEE BUILDER
+   The page's whole behavior sits below, split into blocks.
+   To customize the products, just change the REFERENZE array;
+   for the recipes, the MISCELE array.
+   ═══════════════════════════════════════════════════════════ */
+(function () {
+'use strict';
+
+var REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (window.gsap && window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
+
+/* ── 1. DATA ─────────────────────────────────────────────── */
+var REFERENZE = [
+  { id:'ghiaccio', nome:'CONTENT CREATION', sub:'Ideas cut clean, made to last past the first glance.',
+    tag:'Foundation', tagCls:'', codice:'8004530010017', prezzo:0.40, unita:'dose',
+    c1:0xBFE3EE, c2:0x7FB6C8, forma:'box', max:7,
+    nutri:[['Creativity','50 g'],['Problem solving','10 g'],['Consistency','8 h']] },
+
+  { id:'latte', nome:'COPYWRITING', sub:'Soft words that wrap the message, without ever watering it down.',
+    tag:'Most requested', tagCls:'red', codice:'8004530020024', prezzo:0.90, unita:'dose',
+    c1:0xF7EEDC, c2:0xDCC9A8, forma:'box', max:6,
+    nutri:[['Clarity','50 ml'],['Tone of voice','3.6 g'],['Origin','Freelance']] },
+
+  { id:'caffe', nome:'STRATEGY', sub:'Concentrated direction, medium roast, full-bodied vision.',
+    tag:'Core skill', tagCls:'gold', codice:'8004530030031', prezzo:1.20, unita:'dose',
+    c1:0x6B4226, c2:0x2E1A0E, forma:'cyl', max:6,
+    nutri:[['Vision','25 ml'],['Clarity of mind','65 mg'],['Focus','Medium-high']] },
+
+  { id:'pistacchio', nome:'BRAND DESIGN', sub:'Dense, recognizable identity, made to stick in memory.',
+    tag:'Premium', tagCls:'gold', codice:'8004530040048', prezzo:2.10, unita:'dose',
+    c1:0xA8BE7C, c2:0x5E7038, forma:'cyl', max:4,
+    nutri:[['Visual consistency','30 g'],['Recognizability','42 %'],['Origin','In-house studio']] },
+
+  { id:'nutella', nome:'SOCIAL MEDIA', sub:'Content that scrolls smoothly, made to stay in the feed.',
+    tag:'', tagCls:'', codice:'8004530050055', prezzo:1.80, unita:'dose',
+    c1:0x7A4A2E, c2:0x33190D, forma:'cyl', max:4,
+    nutri:[['Engagement','30 g'],['Posting consistency','18 %'],['Community','13 %']] },
+
+  { id:'granella', nome:'PROBLEM SOLVING', sub:'Small, uneven solutions that make the difference where it counts.',
+    tag:'Crunchy', tagCls:'', codice:'8004530060062', prezzo:1.10, unita:'dose',
+    c1:0xC79A63, c2:0x7A4E24, forma:'box', max:8,
+    nutri:[['Weight','15 g'],['Precision','2–4 mm'],['Under pressure','Strong']] },
+
+  { id:'schiuma', nome:'PUBLIC SPEAKING', sub:'Light but steady presence, able to hold the room.',
+    tag:'New', tagCls:'red', codice:'8004530070079', prezzo:0.80, unita:'dose',
+    c1:0xFBF6EC, c2:0xE0D4BE, forma:'cyl', max:5,
+    nutri:[['Clarity on stage','20 g'],['Stage stamina','8 min'],['Confidence','Fine']] }
+];
+
+var MISCELE = [
+  { n:'01', nome:'SOCIAL MEDIA MANAGER', tags:['Social Media','Problem Solving','Content Creation'],
+    d:'The most requested profile. Social at the base, strategy sinking in slowly, problem solving to close.',
+    ric:{ nutella:2, caffe:2, latte:2, granella:2, ghiaccio:2 } },
+  { n:'02', nome:'BRAND DESIGNER', tags:['Brand Design','Copywriting','Public Speaking'],
+    d:'More visual and more polished. Brand design stays the base, public speaking crowns the profile.',
+    ric:{ pistacchio:2, latte:3, caffe:1, ghiaccio:2, schiuma:2 } },
+  { n:'03', nome:'CREATIVE DIRECTOR', tags:['Strategy','Content Creation'],
+    d:'No compromises. Three doses of strategy, generous content creation, a hint of public speaking.',
+    ric:{ caffe:3, ghiaccio:3, schiuma:1 } },
+  { n:'04', nome:'ALL-ROUND MARKETER', tags:['Brand Design','Social Media','Public Speaking'],
+    d:'Every skill together, tied by copywriting. The most complete profile on the menu.',
+    ric:{ nutella:1, pistacchio:1, latte:3, caffe:1, schiuma:2, granella:1 } }
+];
+
+var GRAMMI = { ghiaccio:60, latte:50, caffe:25, pistacchio:30, nutella:30, granella:15, schiuma:20 };
+var byId = {}; REFERENZE.forEach(function (r) { byId[r.id] = r; });
+
+/* glass state: how many doses per item */
+var stato = {};
+REFERENZE.forEach(function (r) { stato[r.id] = 0; });
+
+/* ── 2. LABELS (2D canvas) ────────────────────────────────
+   The same function draws the label used both as the texture
+   on the hero's 3D packs and as the 2D artwork on the product
+   cards. This is where the "packaging" look comes from — flat,
+   precise graphics, not a fake photo. */
+function hex(n) { return '#' + n.toString(16).padStart(6, '0'); }
+
+/* IMPORTANT — color handling.
+   The renderer works in linear space and converts to sRGB only
+   on output (outputEncoding). A color taken from a design hex
+   value is however ALREADY in sRGB: passing it as-is gets
+   interpreted as linear and reconverted, coming out much
+   lighter than expected (the coffee turned into cream). Every
+   material color therefore needs converting here, once.        */
+function col(n) { return new THREE.Color(n).convertSRGBToLinear(); }
+function tinta(mat, n) { mat.color.setHex(n).convertSRGBToLinear(); }
+
+/* ── DRINK PAINTING ───────────────────────────────────────────
+   The mix texture: a vertical gradient (coffee on top, milk on
+   the bottom) plus the pours accumulated from each pour-in.
+   Repainted only when the milk/coffee ratio changes, not on
+   every frame.                                                 */
+var COLATE = [];                       /* {x,y,r,col,squash,rot} */
+
+function mescolaHex(a, b, q) {
+  var ar = a >> 16 & 255, ag = a >> 8 & 255, ab = a & 255;
+  var br = b >> 16 & 255, bg = b >> 8 & 255, bb = b & 255;
+  return 'rgb(' + Math.round(ar + (br - ar) * q) + ',' +
+                  Math.round(ag + (bg - ag) * q) + ',' +
+                  Math.round(ab + (bb - ab) * q) + ')';
+}
+
+function ridipingiMisto() {
+  var x = G.ctxMisto, W = 256, H = 256;
+  var l = stato.latte, c = stato.caffe, t = l + c;
+  var q = t ? c / t : 0;
+  /* coffee darkens fast: the first dose shows much more than
+     the fourth, just like in reality */
+  var forza = 1 - Math.pow(1 - q, 1.35);
+
+  var chiaro = 0xF6ECD8, scuro = 0x3A2011;
+  x.globalAlpha = 1; x.globalCompositeOperation = 'source-over';
+  var g = x.createLinearGradient(0, 0, 0, H);
+  /* V runs from 1 at the top to 0 at the bottom of the cylinder:
+     the top of the canvas is the surface of the liquid */
+  g.addColorStop(0.00, mescolaHex(chiaro, scuro, Math.min(forza * 1.15, 1)));
+  g.addColorStop(0.42, mescolaHex(chiaro, scuro, forza * 0.82));
+  g.addColorStop(1.00, mescolaHex(chiaro, scuro, forza * 0.42));
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+
+  COLATE.forEach(function (b) {
+    var rg = x.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
+    rg.addColorStop(0, b.col); rg.addColorStop(1, 'rgba(0,0,0,0)');
+    x.globalAlpha = b.a;
+    x.save(); x.translate(b.x, b.y); x.rotate(b.rot); x.scale(1, b.squash);
+    x.translate(-b.x, -b.y);
+    x.fillStyle = rg;
+    x.beginPath(); x.arc(b.x, b.y, b.r, 0, 6.2832); x.fill();
+    x.restore();
+  });
+  x.globalAlpha = 1;
+  if (G.texMisto) G.texMisto.needsUpdate = true;
+
+  /* the surface takes the darkest tone of the gradient: it's
+     the face the coffee just poured into */
+  if (G.matPelo) {
+    var s = mescolaHex(chiaro, scuro, Math.min(forza * 1.15, 1));
+    var n = s.match(/\d+/g);
+    G.matPelo.color.setRGB(n[0] / 255, n[1] / 255, n[2] / 255).convertSRGBToLinear();
+  }
+}
+
+/* a pour: pouring in leaves a vertical streak, not a round
+   blob — that's why it gets squashed on the Y axis */
+function colata(colHex, scura) {
+  COLATE.push({
+    x: Math.random() * 256,
+    y: Math.random() * 150,                 /* born up high */
+    r: 38 + Math.random() * 46,
+    col: colHex,
+    a: 0.30 + Math.random() * 0.22,
+    squash: 1.7 + Math.random() * 1.5,      /* stretched vertically */
+    rot: (Math.random() - 0.5) * 0.5
+  });
+  if (COLATE.length > 14) COLATE.shift();
+  ridipingiMisto();
+}
+
+function disegnaEtichetta(ctx, r, W, H) {
+  var g = ctx.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, hex(r.c1)); g.addColorStop(1, hex(r.c2));
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+
+  var scuro = ((r.c1 >> 16 & 255) * 0.299 + (r.c1 >> 8 & 255) * 0.587 + (r.c1 & 255) * 0.114) < 150;
+  var inch = scuro ? 'rgba(255,255,255,' : 'rgba(20,17,14,';
+
+  /* central band */
+  ctx.fillStyle = inch + '.10)';
+  ctx.fillRect(0, H * 0.30, W, H * 0.34);
+
+  /* name — the new items (creative disciplines) have longer
+     names than the old ones ("PUBLIC SPEAKING" vs "LATTE"), so
+     the font shrinks until it fits the band */
+  ctx.textAlign = 'center';
+  ctx.fillStyle = inch + '.96)';
+  var fsz = Math.round(H * 0.13), maxW = W * 0.86;
+  ctx.font = '700 ' + fsz + 'px "IBM Plex Mono",monospace';
+  while (ctx.measureText(r.nome).width > maxW && fsz > H * 0.06) {
+  fsz -= 2;
+  ctx.font = '700 ' + fsz + 'px "IBM Plex Mono",monospace';
+}
+ctx.fillText(r.nome, W / 2, H * 0.45);
+
+  ctx.fillStyle = inch + '.55)';
+  ctx.font = Math.round(H * 0.055) + 'px "IBM Plex Mono",monospace';
+  ctx.fillText(r.nutri[0][1] + '  ·  ' + r.unita.toUpperCase(), W / 2, H * 0.545);
+
+  /* brass band */
+  ctx.fillStyle = 'rgba(195,146,55,.94)';
+  ctx.fillRect(0, H * 0.66, W, H * 0.095);
+  ctx.fillStyle = '#14110E';
+  ctx.font = '700 ' + Math.round(H * 0.05) + 'px "IBM Plex Mono",monospace';
+  ctx.fillText('QUALITY GUARANTEED', W / 2, H * 0.728);
+
+  /* barcode */
+  var bx = W * 0.16, by = H * 0.80, bh = H * 0.11, s = 0;
+  ctx.fillStyle = inch + '.72)';
+  for (var i = 0; i < 42 && bx < W * 0.84; i++) {
+    s = (i * 37 + r.codice.charCodeAt(i % r.codice.length) * 11) % 7;
+    var w = (s % 3 + 1) * (W / 260);
+    if (s % 3 !== 1) ctx.fillRect(bx, by, w, bh);
+    bx += w + W / 200;
+  }
+  ctx.fillStyle = inch + '.45)';
+  ctx.font = Math.round(H * 0.042) + 'px "IBM Plex Mono",monospace';
+  ctx.fillText(r.codice, W / 2, H * 0.955);
+
+  /* frame */
+  ctx.strokeStyle = inch + '.28)';
+  ctx.lineWidth = Math.max(2, W / 170);
+  ctx.strokeRect(ctx.lineWidth, ctx.lineWidth, W - ctx.lineWidth * 2, H - ctx.lineWidth * 2);
+}
+
+function texEtichetta(r, size) {
+  var c = document.createElement('canvas');
+  c.width = size; c.height = size;
+  disegnaEtichetta(c.getContext('2d'), r, size, size);
+  var t = new THREE.CanvasTexture(c);
+  t.encoding = THREE.sRGBEncoding;
+  t.anisotropy = 4;
+  return t;
+}
+
+/* ── 3. SVG BARCODE (cards) ──────────────────────────────── */
+function barcodeSVG(codice) {
+  var out = '', x = 2, i, s, w;
+  for (i = 0; i < 70 && x < 158; i++) {
+    s = (i * 31 + codice.charCodeAt(i % codice.length) * 7) % 9;
+    w = (s % 3 + 1) * 1.1;
+    if (s % 3 !== 1) out += '<rect x="' + x.toFixed(1) + '" y="0" width="' + w.toFixed(1) + '" height="24" fill="currentColor"/>';
+    x += w + 0.9;
+  }
+  return '<svg viewBox="0 0 160 24" preserveAspectRatio="none" aria-hidden="true">' + out + '</svg>';
+}
+
+/* ── 4. HERO SCENE — the 3D shelf ────────────────────────── */
+function scenaHero() {
+  var cv = document.getElementById('heroCanvas');
+  var ren = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true });
+  ren.setPixelRatio(Math.min(devicePixelRatio, 2));
+  ren.outputEncoding = THREE.sRGBEncoding;
+  ren.toneMapping = THREE.ACESFilmicToneMapping;
+  ren.toneMappingExposure = 1.05;
+
+  var sc = new THREE.Scene();
+  var cam = new THREE.PerspectiveCamera(46, 1, 0.1, 120);
+  cam.position.set(0, 0, 15);
+
+  sc.add(new THREE.AmbientLight(0xfff4e2, 0.72));
+  var k = new THREE.DirectionalLight(0xfff6e6, 1.15); k.position.set(6, 9, 8); sc.add(k);
+  var f = new THREE.DirectionalLight(0xC39237, 0.34); f.position.set(-7, -3, -5); sc.add(f);
+
+  /* The packs sit at the sides and behind, not behind the
+     title: two side columns plus a low row. This way the text
+     stays readable and they act as wings.                    */
+  var pacchi = [];
+  var POSTI = [
+    [-7.6,  2.9, -2.5], [-6.2, -2.3, -1.0],
+    [ 7.6,  2.9, -2.5], [ 6.2, -2.3, -1.0],
+    [-3.5, -4.8, -1.4], [ 0.0, -5.1, -2.4], [ 3.5, -4.8, -1.4]
+  ];
+  REFERENZE.forEach(function (r, idx) {
+    var geo;
+    if (r.forma === 'cyl') geo = new THREE.CylinderGeometry(0.88, 0.88, 2.5, 40);
+    else geo = new THREE.BoxGeometry(1.68, 2.5, 0.82);
+
+    var mat = new THREE.MeshStandardMaterial({
+      map: texEtichetta(r, 512), roughness: 0.44, metalness: 0.05,
+      transparent: true, opacity: 0.62
+    });
+    var m = new THREE.Mesh(geo, mat);
+    var p = POSTI[idx];
+    m.position.set(p[0], p[1], p[2]);
+    m.rotation.y = p[0] * -0.05;
+    m.userData.fase = idx * 0.85;
+    m.userData.y0 = p[1];
+    sc.add(m); pacchi.push(m);
+  });
+
+  var mx = 0, my = 0;
+  if (!('ontouchstart' in window)) {
+    addEventListener('mousemove', function (e) {
+      mx = (e.clientX / innerWidth - 0.5) * 2;
+      my = (e.clientY / innerHeight - 0.5) * 2;
+    }, { passive: true });
+  }
+
+  function resize() {
+    var w = cv.clientWidth, h = cv.clientHeight;
+    if (!w || !h) return;
+    ren.setSize(w, h, false);
+    cam.aspect = w / h; cam.updateProjectionMatrix();
+  }
+  addEventListener('resize', resize); resize();
+
+  var t = 0;
+  (function loop() {
+    requestAnimationFrame(loop);
+    t += REDUCED ? 0 : 0.009;
+    pacchi.forEach(function (m, i) {
+      m.rotation.y += REDUCED ? 0 : 0.0055 + mx * 0.004 * (i % 2 ? -1 : 1);
+      m.position.y = m.userData.y0 + Math.sin(t * 0.7 + m.userData.fase) * 0.16;
+      m.rotation.x = Math.sin(t * 0.45 + m.userData.fase) * 0.05;
+    });
+    cam.position.x += (mx * 1.1 - cam.position.x) * 0.05;
+    cam.position.y += (-my * 0.6 - cam.position.y) * 0.05;
+    cam.lookAt(0, -0.3, 0);
+    ren.render(sc, cam);
+  })();
+}
+
+/* ── 5. COUNTER SCENE — the glass ────────────────────────
+   The glass is generated with a LatheGeometry from a technical
+   profile (no external models): exact control over thickness,
+   fillets and taper. */
+var G = {};                       /* references to the scene */
+var R_INT = 0.55;                 /* internal liquid radius */
+var Y_FONDO = 0.17, Y_ORLO = 2.42;
+var CORSA = Y_ORLO - Y_FONDO;
+var ghiaccioEls = [], granellaEls = [], bolleEls = [];
+
+/* ── INSTANCED GRANULES ───────────────────────────────────────
+   Up to 150 granules used to be 150 separate meshes: on their
+   own they made up about a hundred of the scene's ~137 draw
+   calls, for 2 mm pieces. With an InstancedMesh they become ONE
+   single draw call — the geometry is identical for all of them,
+   only the matrix changes. The granules stay as regular Object3D
+   held outside the scene, so GSAP keeps animating their
+   position/rotation/scale exactly as before, and every frame
+   their matrices get copied into the instance. Shape variety
+   comes from non-uniform scale and rotation: at that size the
+   individual granule's silhouette isn't distinguishable anyway. */
+var MAX_GRAN = 200;
+var granelliVivi = [];      /* drawn now, including ones mid-flight */
+
+function profiloBicchiere() {
+  /* (radius, height) — the glass's cross-section, from the
+     center of the base, up the outer wall, over the rim and
+     back down inside to the center of the inner base.        */
+  return [
+    [0.00, 0.00], [0.54, 0.00], [0.585, 0.05], [0.60, 0.14],
+    [0.635, 1.30], [0.665, 2.44], [0.663, 2.50], [0.612, 2.50],
+    [0.606, 2.42], [0.578, 1.28], [0.556, 0.22], [0.50, 0.155],
+    [0.00, 0.15]
+  ].map(function (p) { return new THREE.Vector2(p[0], p[1]); });
+}
+
+function geoCubetto(seme) {
+  /* A real ice cube: flat faces and rounded edges, not a
+     faceted crystal. Lots of segments + a light pull toward
+     the sphere round off only the corners; a deterministic
+     micro-ripple (no pure randomness, which "spiked" the
+     surface) gives the irregularity of ice that's melted a
+     little. Soft normals, not flat.                         */
+  var g = new THREE.BoxGeometry(1, 1, 1, 6, 6, 6);
+  var p = g.attributes.position, v = new THREE.Vector3(), n = new THREE.Vector3();
+  var s = seme * 2.7 + 1.3;
+  for (var i = 0; i < p.count; i++) {
+    v.fromBufferAttribute(p, i);
+    n.copy(v).normalize();
+    v.lerp(n.clone().multiplyScalar(0.63), 0.34);          /* edge rounding */
+    var w = 0.020 * Math.sin(v.x * 9.1 + s) * Math.cos(v.y * 7.3 - s)
+          + 0.014 * Math.sin(v.z * 11.7 + s * 1.7);
+    v.addScaledVector(n, w);
+    p.setXYZ(i, v.x, v.y, v.z);
+  }
+  g.computeVertexNormals();
+  return g;
+}
+
+function geoScaglia() {
+  var g = new THREE.TetrahedronGeometry(0.5, 0);
+  var p = g.attributes.position, v = new THREE.Vector3();
+  for (var i = 0; i < p.count; i++) {
+    v.fromBufferAttribute(p, i);
+    v.multiplyScalar(0.75 + Math.random() * 0.5);
+    p.setXYZ(i, v.x, v.y * 0.6, v.z);
+  }
+  g.computeVertexNormals();
+  return g;
+}
+
+/* foam dome: half sphere with the pivot at the base and a
+   slightly uneven back, like settled whipped cream          */
+function geoCupola() {
+  var g = new THREE.SphereGeometry(1, 46, 14, 0, Math.PI * 2, 0, Math.PI / 2);
+  var p = g.attributes.position, v = new THREE.Vector3();
+  for (var i = 0; i < p.count; i++) {
+    v.fromBufferAttribute(p, i);
+    var gonf = 1 + 0.035 * Math.sin(v.x * 7.3) * Math.cos(v.z * 6.1)
+                 + 0.022 * Math.sin(v.z * 10.4 + 1.7);
+    p.setXYZ(i, v.x * gonf, v.y * gonf, v.z * gonf);
+  }
+  g.computeVertexNormals();
+  return g;
+}
+
+function cilindroBase(r) {
+  var g = new THREE.CylinderGeometry(r, r, 1, 48, 1, false);
+  g.translate(0, 0.5, 0);                                  /* pivot at the base */
+  return g;
+}
+
+function scenaBancone() {
+  var cv = document.getElementById('glc');
+  var host = document.getElementById('stage');
+  var ren = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true });
+  ren.setPixelRatio(Math.min(devicePixelRatio, 2));
+  ren.outputEncoding = THREE.sRGBEncoding;
+  ren.toneMapping = THREE.ACESFilmicToneMapping;
+  ren.toneMappingExposure = 0.94;
+  ren.shadowMap.enabled = true;
+  ren.shadowMap.type = THREE.PCFSoftShadowMap;
+
+  var sc = new THREE.Scene();
+  var cam = new THREE.PerspectiveCamera(30, 1, 0.1, 60);
+  var MIRA = new THREE.Vector3(0, 1.22, 0);
+  /* fixed shooting direction; frame() computes the distance */
+  var DIR = new THREE.Vector3(0.34, 0.30, 1).normalize();
+  var CAM0 = new THREE.Vector3();
+
+  /* Frames the glass whatever the panel's shape: it computes the
+     distance needed both vertically and horizontally and keeps
+     the larger one, so on narrow, tall panels the camera backs
+     off instead of ending up inside the glass.                 */
+  function inquadra() {
+    var ALT = 3.5, LAR = 1.9;                       /* bounding box to contain */
+    var v = cam.fov * Math.PI / 180;
+    var dV = (ALT / 2) / Math.tan(v / 2);
+    var dO = (LAR / 2) / Math.tan(v / 2) / Math.max(cam.aspect, 0.0001);
+    var d = Math.max(dV, dO) * 1.04;
+    CAM0.copy(DIR).multiplyScalar(d).add(MIRA);
+    cam.position.copy(CAM0);
+  }
+
+  /* backdrop: studio sweep, solid tone at the top → paper at the bottom */
+  var bg = document.createElement('canvas'); bg.width = 8; bg.height = 256;
+  var bx = bg.getContext('2d');
+  var bgr = bx.createLinearGradient(0, 0, 0, 256);
+  bgr.addColorStop(0, '#EFE7D8'); bgr.addColorStop(0.62, '#E7DDC9'); bgr.addColorStop(1, '#D8CBB2');
+  bx.fillStyle = bgr; bx.fillRect(0, 0, 8, 256);
+  var bgt = new THREE.CanvasTexture(bg); bgt.encoding = THREE.sRGBEncoding;
+  sc.background = bgt;
+
+  /* STUDIO ENVIRONMENT — this is what makes the ice and glass
+     read correctly. Without a map to reflect, clearcoat and
+     roughness produce nothing and the cubes look like plaster:
+     white, flat, edgeless. Here I build an equirectangular map
+     on the fly that mimics a photo set (bright softbox on top,
+     dark floor below) and feed it to the PMREMGenerator. The
+     resulting reflections draw the cube edges and the glass wall. */
+  (function ambienteStudio() {
+    var c = document.createElement('canvas'); c.width = 1024; c.height = 512;
+    var x = c.getContext('2d');
+
+    /* A real photo set, not a white room. It used to be bright
+       everywhere: every glossy surface mirrored it and the drink
+       came out washed out — even with the surface set to pure
+       black it still rendered light gray. A still-life photographer
+       does the opposite: a dark background and two or three tight
+       softboxes. The black is what gives the liquid body and
+       separates the ice edges; the bright strips are the light
+       hits on the glass.                                        */
+    var g = x.createLinearGradient(0, 0, 0, 512);
+    g.addColorStop(0.00, '#cfc7ba');      /* ceiling: faint bounce */
+    g.addColorStop(0.34, '#6d665c');
+    g.addColorStop(0.52, '#2b2722');      /* dark horizon = contrast */
+    g.addColorStop(1.00, '#191714');      /* dark floor */
+    x.fillStyle = g; x.fillRect(0, 0, 1024, 512);
+
+    /* soft softbox: strip with feathered edges (makes the light volume) */
+    function softbox(cx, cy, w, h, forza) {
+      var s = x.createRadialGradient(cx, cy, 0, cx, cy, Math.max(w, h));
+      s.addColorStop(0, 'rgba(255,252,245,' + forza + ')');
+      s.addColorStop(0.55, 'rgba(255,250,240,' + (forza * 0.42) + ')');
+      s.addColorStop(1, 'rgba(255,250,240,0)');
+      x.save(); x.translate(cx, cy); x.scale(w / Math.max(w, h), h / Math.max(w, h));
+      x.translate(-cx, -cy);
+      x.fillStyle = s; x.beginPath(); x.arc(cx, cy, Math.max(w, h), 0, 6.2832); x.fill();
+      x.restore();
+    }
+    /* "hard" softbox: a crisp edge (just a touch of feather)
+       instead of a gaussian cloud. This is what draws the sharp
+       light rectangles you see in real product-photo reflections —
+       without it, every reflection on glass and ice stays a soft
+       halo and reads instantly as CG.                            */
+    function softboxDuro(x0, y0, w, h, forza, feather) {
+      var cx = x0 + w / 2, cy = y0 + h / 2;
+      x.save();
+      x.filter = 'blur(' + feather + 'px)';
+      x.fillStyle = 'rgba(255,253,248,' + forza + ')';
+      x.fillRect(x0, y0, w, h);
+      x.restore();
+    }
+    softbox(192, 148, 108, 192, 1.0);         /* key light, tall and narrow */
+    softbox(660, 120, 180, 108, 0.55);        /* fill, wider and weaker */
+    softbox(476, 36, 300, 60, 0.5);           /* veil from above */
+    softboxDuro(140, 90, 90, 210, 0.9, 5);    /* key panel: sharp edge */
+    softboxDuro(600, 70, 130, 90, 0.6, 6);    /* fill panel: sharp edge */
+
+    var t = new THREE.CanvasTexture(c);
+    t.mapping = THREE.EquirectangularReflectionMapping;
+    t.encoding = THREE.sRGBEncoding;
+    var pm = new THREE.PMREMGenerator(ren);
+    pm.compileEquirectangularShader();
+    sc.environment = pm.fromEquirectangular(t).texture;
+    pm.dispose(); t.dispose();
+  })();
+
+  sc.add(new THREE.AmbientLight(col(0xfff4e6), 0.18));
+  var key = new THREE.DirectionalLight(col(0xfff8ec), 1.15);
+  key.position.set(3.0, 6.4, 4.4);
+  key.castShadow = true;
+  key.shadow.mapSize.set(1024, 1024);
+  key.shadow.camera.left = -2.4; key.shadow.camera.right = 2.4;
+  key.shadow.camera.top = 4.2; key.shadow.camera.bottom = -0.6;
+  key.shadow.radius = 7; key.shadow.bias = -0.0022;
+  sc.add(key);
+  var rim = new THREE.DirectionalLight(col(0xE3BC65), 0.34); rim.position.set(-4, 2.2, -3.4); sc.add(rim);
+  var fill = new THREE.DirectionalLight(0xffffff, 0.20); fill.position.set(-2, 1, 5); sc.add(fill);
+
+  /* resting surface (receives the shadow) */
+  var piano = new THREE.Mesh(
+    new THREE.PlaneGeometry(24, 24),
+    new THREE.ShadowMaterial({ opacity: 0.13 })
+  );
+  piano.rotation.x = -Math.PI / 2; piano.receiveShadow = true;
+  sc.add(piano);
+
+  /* painted contact shadow (soft, under the glass) */
+  var oc = document.createElement('canvas'); oc.width = oc.height = 128;
+  var ox = oc.getContext('2d');
+  var og = ox.createRadialGradient(64, 64, 4, 64, 64, 62);
+  og.addColorStop(0, 'rgba(20,17,14,.42)'); og.addColorStop(1, 'rgba(20,17,14,0)');
+  ox.fillStyle = og; ox.fillRect(0, 0, 128, 128);
+  var ombra = new THREE.Mesh(
+    new THREE.PlaneGeometry(2.5, 2.5),
+    new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(oc), transparent: true, depthWrite: false })
+  );
+  ombra.rotation.x = -Math.PI / 2; ombra.position.y = 0.004; sc.add(ombra);
+
+  /* ── the glass ── */
+  /* Glass: low opacity and DoubleSide. The two walls that overlap
+     at the rim double the opacity right along the sides, which is
+     how a real glass reads — dark at the edges, almost invisible
+     in the middle. High opacity would make it look like ceramic,
+     as it used to.
+     (Also tried three.js's real transmission — actual refraction
+     of the background through the glass. Works great on simple
+     shapes, but on this glass — a thin double-wound Lathe wall —
+     it came out as a flat gray cylinder with no reflections, for
+     a cause not reliably isolated. Better the already-verified
+     alpha trick than a feature that looks broken.)               */
+  var vetro = new THREE.Mesh(
+    new THREE.LatheGeometry(profiloBicchiere(), 72),
+    new THREE.MeshPhysicalMaterial({
+      color: col(0xEAF2F0), roughness: 0.04, metalness: 0,
+      clearcoat: 1, clearcoatRoughness: 0.03,
+      envMapIntensity: 1.6,
+      transparent: true, opacity: 0.16, side: THREE.DoubleSide,
+      depthWrite: false
+    })
+  );
+  vetro.castShadow = true;
+  vetro.renderOrder = 4;                     /* drawn after the contents */
+  sc.add(vetro);
+
+  /* ── liquid layers (pivot at the base, grow upward) ──────── */
+  function strato(colore, lucido) {
+    var m = new THREE.Mesh(cilindroBase(R_INT), new THREE.MeshPhysicalMaterial({
+      color: col(colore), roughness: lucido ? 0.14 : 0.42, metalness: 0.02,
+      clearcoat: lucido ? 0.7 : 0, clearcoatRoughness: 0.15
+    }));
+    m.position.y = Y_FONDO; m.scale.y = 0.0001; m.visible = false;
+    sc.add(m); return m;
+  }
+  G.nutella    = strato(0x4A2A18, true);
+  G.pistacchio = strato(0x8FA466, true);
+  G.misto      = strato(0xF3E7D2, false);
+
+  /* ── THE DRINK ISN'T A FLAT COLOR ─────────────────────────
+     This is the real leap toward photorealism. An iced latte
+     isn't a single-color cylinder: coffee comes in from the top
+     and sinks in streaks, the milk stays lighter at the bottom,
+     and the edges are darker because you're looking through more
+     liquid there. I paint it all onto a canvas I use as a
+     texture, and every pour adds its own streaks to it.        */
+  G.telaMisto = document.createElement('canvas');
+  G.telaMisto.width = 256; G.telaMisto.height = 256;
+  G.ctxMisto = G.telaMisto.getContext('2d');
+  G.texMisto = new THREE.CanvasTexture(G.telaMisto);
+  G.texMisto.encoding = THREE.sRGBEncoding;
+  G.texMisto.wrapS = THREE.RepeatWrapping;
+  /* Wall and surface need different materials, and that's where
+     the look is decided. Looking at the glass from above you
+     mostly see the cylinder's TOP CAP, which samples the center
+     of the texture: from there you'd get a washed-out mid-tone
+     instead of the dark coffee you expect at the surface. A
+     CylinderGeometry exposes three groups (wall, top cap,
+     bottom), so I pass one material for each: the gradient lives
+     on the wall, while the surface is a solid, dark, glossy tone
+     like the surface of a latte.                                */
+  var matParete = new THREE.MeshPhysicalMaterial({
+    map: G.texMisto, roughness: 0.46, metalness: 0,
+    envMapIntensity: 0.22,           /* low: a bright environment washed everything out */
+    clearcoat: 0.25, clearcoatRoughness: 0.3   /* wet veil on the inner wall */
+  });
+  G.matPelo = new THREE.MeshPhysicalMaterial({
+    /* Glossy but not a mirror: a latte has microfoam on the
+       surface. With roughness 0.10 and full reflection the
+       surface mirrored the white backdrop and the coffee
+       disappeared — tried with a pure-black surface too, it
+       still rendered light gray. The clearcoat adds the actual
+       glossy film of a liquid's surface (where the reference's
+       droplet-shaped reflection comes from), over the diffuse
+       color which stays opaque.                                */
+    roughness: 0.24, metalness: 0,
+    envMapIntensity: 0.34,
+    clearcoat: 0.55, clearcoatRoughness: 0.18
+  });
+  /* Milk and coffee are translucent: the cubes below the surface
+     should be visible through it. depthWrite off + low renderOrder
+     so the ice (renderOrder 3) gets drawn on top. The creams stay
+     opaque: they really are dense and fully covering.          */
+  [matParete, G.matPelo].forEach(function (m) {
+    m.transparent = true; m.opacity = 0.95; m.depthWrite = false;
+  });
+  G.misto.material = [matParete, G.matPelo, matParete];
+  G.misto.renderOrder = 1;
+  ridipingiMisto();
+  /* FOAM — it used to be a scaled sphere: as it grew it turned
+     into a ball, because the vertical scale ended up matching
+     the radius. Now it's in two pieces: a cylindrical body that
+     rises like the other layers, and a FIXED-height dome sitting
+     on top. So even a lot of foam stays a thick layer with a
+     slightly rounded back, not a balloon.                      */
+  var matSchiuma = new THREE.MeshStandardMaterial({ color: col(0xFBF5E9), roughness: 0.92, metalness: 0 });
+  G.schiumaCorpo = new THREE.Mesh(cilindroBase(1), matSchiuma);
+  G.schiumaCupola = new THREE.Mesh(geoCupola(), matSchiuma);
+  G.schiumaCorpo.scale.setScalar(0.0001); G.schiumaCorpo.visible = false;
+  G.schiumaCupola.scale.setScalar(0.0001); G.schiumaCupola.visible = false;
+  sc.add(G.schiumaCorpo, G.schiumaCupola);
+
+  /* groups for solid elements and effects */
+  G.gGhiaccio = new THREE.Group(); G.gGranella = new THREE.Group(); G.gFx = new THREE.Group();
+  G.gGhiaccio.renderOrder = 3;              /* translucent: before the glass (4) */
+  sc.add(G.gGhiaccio, G.gGranella, G.gFx);
+
+  /* shared geometries and materials (instantiated once) */
+  G.geoCubi = [geoCubetto(0), geoCubetto(1), geoCubetto(2)];
+  /* Three near-identical materials: real ice is never fully
+     uniform. Translucent (not opaque) so the cube behind and the
+     liquid show through, like in a photo. depthWrite stays on:
+     cubes cover each other cleanly instead of blending together. */
+  /* "Photo-real" ice: an almost-opaque frozen body + a glossy
+     coat on top (clearcoat), which is exactly how a cube fresh
+     out of the freezer and already wet behaves. Tried a fully
+     transparent cube first: translucent white on a cream
+     background disappears, no contrast. The reference's cubes
+     are in fact opaque and milky, not glassy.                  */
+  /* The ice gets stained where it dips into the drink. Can't be
+     done with the material alone: the tint depends on HOW HIGH
+     each point of the cube sits relative to the liquid's surface,
+     so it has to be decided per-fragment. I inject two uniforms
+     into the standard shader — the liquid level and its color —
+     and fade the diffuse only below that height. Alpha is left
+     untouched, so the cubes stay translucent as before.        */
+  G.uPelo  = { value: -99 };
+  G.uTinta = { value: new THREE.Color(0xF3E7D2) };
+
+  function sporcaSottoIlPelo(mat) {
+    mat.onBeforeCompile = function (sh) {
+      sh.uniforms.uPelo  = G.uPelo;
+      sh.uniforms.uTinta = G.uTinta;
+      sh.vertexShader = sh.vertexShader
+        .replace('#include <common>', '#include <common>\nvarying vec3 vMondo;')
+        .replace('#include <project_vertex>',
+                 'vMondo = (modelMatrix * vec4(transformed, 1.0)).xyz;\n#include <project_vertex>');
+      sh.fragmentShader = sh.fragmentShader
+        .replace('#include <common>',
+                 '#include <common>\nvarying vec3 vMondo;\nuniform float uPelo;\nuniform vec3 uTinta;')
+        .replace('#include <color_fragment>',
+                 '#include <color_fragment>\n' +
+                 'float sotto = smoothstep(uPelo + 0.05, uPelo - 0.09, vMondo.y);\n' +
+                 'diffuseColor.rgb = mix(diffuseColor.rgb,' +
+                 ' mix(diffuseColor.rgb, uTinta, 0.78), sotto);\n');
+    };
+  }
+
+  G.matGhiaccio = [0, 1, 2].map(function (i) {
+    var m = new THREE.MeshPhysicalMaterial({
+      color: col([0xDCEFF4, 0xE6F4F7, 0xD6ECF1][i]),
+      roughness: 0.16 + i * 0.05,          /* frozen body, a bit glossier than before */
+      metalness: 0,
+      clearcoat: 1, clearcoatRoughness: 0.05,   /* wet surface */
+      envMapIntensity: 2.4,
+      transparent: true, opacity: 0.9,
+      depthWrite: true
+    });
+    sporcaSottoIlPelo(m);
+    return m;
+  });
+  G.geoScaglie = [geoScaglia(), geoScaglia(), geoScaglia()];
+  G.matGranella = new THREE.MeshStandardMaterial({ color: col(0x8A5527), roughness: 0.72, flatShading: true });
+  G.istanzaGran = new THREE.InstancedMesh(G.geoScaglie[0], G.matGranella, MAX_GRAN);
+  G.istanzaGran.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  G.istanzaGran.count = 0;
+  G.istanzaGran.castShadow = true;
+  G.istanzaGran.frustumCulled = false;   /* granules fly out of the glass */
+  sc.add(G.istanzaGran);
+
+  /* Stands in for the Group in the functions that dispose of
+     pieces (svuota, tracimazione, togliUltimo): those call
+     gruppo.remove(m), and for instances "removing" means
+     dropping it from the list that fills the matrices.        */
+  G.granelli = { remove: function (m) {
+    var i = granelliVivi.indexOf(m);
+    if (i >= 0) granelliVivi.splice(i, 1);
+  } };
+
+  G.sc = sc; G.cam = cam; G.ren = ren; G.host = host; G.vetro = vetro;
+
+  /* ── POST-PROCESSING ──────────────────────────────────────
+     What separates a "CG" render from a photo is almost never
+     the geometry: it's the optics. An f/2 camera blurs the
+     background, vignettes at the corners, has grain and a
+     touch of chromatic aberration at the edges. Without these
+     every pixel is in focus and the eye reads "computer".
+
+     A single full-screen pass instead of a chain of effects:
+     the scene goes to a render target with its depth texture,
+     then a shader reads depth and color and does everything
+     at once. One extra pass, not five.                       */
+  var POST = (function () {
+    var ok = !!THREE.DepthTexture &&
+             (ren.capabilities.isWebGL2 || !!ren.extensions.get('WEBGL_depth_texture'));
+    if (!ok || REDUCED) return { attivo: false, ridimensiona: function () {} };
+
+    var rt = new THREE.WebGLRenderTarget(1, 1, {
+      minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter,
+      format: THREE.RGBAFormat, stencilBuffer: false
+    });
+    rt.texture.encoding = THREE.sRGBEncoding;
+    rt.depthTexture = new THREE.DepthTexture();
+    rt.depthTexture.type = THREE.UnsignedShortType;
+
+    var quad = new THREE.Scene();
+    var oc = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    var mat = new THREE.ShaderMaterial({
+      uniforms: {
+        tCol:   { value: rt.texture },
+        tDep:   { value: rt.depthTexture },
+        uRis:   { value: new THREE.Vector2(1, 1) },
+        uVicino:{ value: cam.near },
+        uLontano:{ value: cam.far },
+        uFuoco: { value: 6.0 },      /* distance of the focal plane */
+        uAmpio: { value: 1.9 },      /* usable depth of field */
+        uSfoca: { value: 3.2 },      /* max blur radius, px */
+        uTempo: { value: 0 }
+      },
+      vertexShader:
+        'varying vec2 vUv;' +
+        'void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }',
+      fragmentShader: [
+        'varying vec2 vUv;',
+        'uniform sampler2D tCol; uniform sampler2D tDep;',
+        'uniform vec2 uRis; uniform float uVicino, uLontano;',
+        'uniform float uFuoco, uAmpio, uSfoca, uTempo;',
+
+        /* the depth texture isn't linear: it needs converting back to meters */
+        'float distanzaReale(float d){',
+        '  float z = d * 2.0 - 1.0;',
+        '  return (2.0 * uVicino * uLontano) /',
+        '         (uLontano + uVicino - z * (uLontano - uVicino));',
+        '}',
+
+        'void main(){',
+        '  float dist = distanzaReale(texture2D(tDep, vUv).x);',
+        /* how out of focus this point is (circle of confusion) */
+        '  float coc = clamp(abs(dist - uFuoco) / uAmpio, 0.0, 1.0);',
+        '  coc = pow(coc, 1.35);',
+        '  vec2 px = uSfoca * coc / uRis;',
+
+        /* golden-angle spiral: 12 samples are enough since the
+           radius stays small, and they don't band like a
+           regular grid would */
+        '  vec3 somma = texture2D(tCol, vUv).rgb;',
+        '  float peso = 1.0;',
+        '  for (int i = 0; i < 12; i++){',
+        '    float f = (float(i) + 0.5) / 12.0;',
+        '    float a = float(i) * 2.39996;',
+        '    vec2 off = vec2(cos(a), sin(a)) * sqrt(f) * px;',
+        '    somma += texture2D(tCol, vUv + off).rgb; peso += 1.0;',
+        '  }',
+        '  vec3 c = somma / peso;',
+
+        /* chromatic aberration: only at the edges, barely perceptible */
+        '  vec2 dal = vUv - 0.5;',
+        '  float r2 = dot(dal, dal);',
+        '  vec2 sc = dal * r2 * 0.010;',
+        '  c.r = texture2D(tCol, vUv + sc).r * 0.5 + c.r * 0.5;',
+        '  c.b = texture2D(tCol, vUv - sc).b * 0.5 + c.b * 0.5;',
+
+        /* soft vignette */
+        '  c *= smoothstep(1.15, 0.34, r2);',
+
+        /* film-like grain: fine noise, a touch stronger in the
+           shadows (JS comment, not GLSL) */
+        '  float g = fract(sin(dot(vUv * uRis + uTempo, vec2(12.9898, 78.233))) * 43758.5453);',
+        '  float lum = dot(c, vec3(0.299, 0.587, 0.114));',
+        '  c += (g - 0.5) * 0.020 * (1.25 - lum);',
+
+        /* micro-contrast + split-tone: real photos are never
+           neutral, shadows shift slightly cool and highlights
+           warm. Without this the render stays "flat", even with
+           the right depth of field.                              */
+        '  c = (c - 0.5) * 1.045 + 0.5;',
+        '  vec3 fredda = vec3(0.965, 0.99, 1.03);',
+        '  vec3 calda  = vec3(1.03, 1.006, 0.965);',
+        '  c *= mix(fredda, calda, smoothstep(0.15, 0.85, lum));',
+        '  float sat = dot(c, vec3(0.299, 0.587, 0.114));',
+        '  c = mix(vec3(sat), c, 1.06);',
+
+        '  gl_FragColor = vec4(c, 1.0);',
+        '}'
+      ].join('\n')
+    });
+    quad.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat));
+
+    return {
+      attivo: true,
+      ridimensiona: function (w, h) {
+        var p = ren.getPixelRatio();
+        rt.setSize(Math.round(w * p), Math.round(h * p));
+        mat.uniforms.uRis.value.set(w * p, h * p);
+      },
+      disegna: function (t) {
+        /* focuses on the glass: the distance changes with
+           parallax, so it needs recalculating every frame */
+        mat.uniforms.uFuoco.value = cam.position.distanceTo(MIRA);
+        mat.uniforms.uTempo.value = t;
+        ren.setRenderTarget(rt);
+        ren.render(sc, cam);
+        ren.setRenderTarget(null);
+        ren.render(quad, oc);
+      }
+    };
+  })();
+
+  G.POST = POST;
+
+  function resize() {
+    var w = host.clientWidth, h = host.clientHeight;
+    if (!w || !h) return;
+    ren.setSize(w, h, false);
+    cam.aspect = w / h; cam.updateProjectionMatrix();
+    POST.ridimensiona(w, h);
+    inquadra();
+  }
+  addEventListener('resize', resize); resize();
+
+  /* gentle parallax of the viewpoint */
+  if (!REDUCED && window.gsap) {
+    var qx = gsap.quickTo(cam.position, 'x', { duration: 1.0, ease: 'power3.out' });
+    var qy = gsap.quickTo(cam.position, 'y', { duration: 1.0, ease: 'power3.out' });
+    host.addEventListener('pointermove', function (e) {
+      var b = host.getBoundingClientRect();
+      qx(CAM0.x + ((e.clientX - b.left) / b.width - 0.5) * 0.7);
+      qy(CAM0.y - ((e.clientY - b.top) / b.height - 0.5) * 0.45);
+    });
+    host.addEventListener('pointerleave', function () { qx(CAM0.x); qy(CAM0.y); });
+  }
+
+  /* copying granule matrices into the InstancedMesh */
+  function aggiornaGranella() {
+    var n = Math.min(granelliVivi.length, MAX_GRAN);
+    for (var i = 0; i < n; i++) {
+      var m = granelliVivi[i];
+      m.updateMatrix();
+      G.istanzaGran.setMatrixAt(i, m.matrix);
+    }
+    G.istanzaGran.count = n;
+    if (n) G.istanzaGran.instanceMatrix.needsUpdate = true;
+  }
+
+  var t0 = performance.now();
+  (function loop() {
+    requestAnimationFrame(loop);
+    cam.lookAt(MIRA);
+    aggiornaGranella();
+    if (POST.attivo) POST.disegna((performance.now() - t0) / 1000);
+    else ren.render(sc, cam);
+  })();
+
+  var l = document.getElementById('load');
+  if (l) l.remove();
+
+  if (window.gsap && !REDUCED) {
+    gsap.from(cam.position, { y: CAM0.y + 0.9, duration: 1.4, ease: 'power3.out' });
+  }
+}
+
+/* ── 6. LAYER HEIGHTS ─────────────────────────────────────
+   Doses turn into fill percentages. The stacking order is
+   fixed (creams at the bottom, mix, foam) regardless of the
+   order the user clicks in.                                */
+function altezze() {
+  var nut  = Math.min(stato.nutella, byId.nutella.max) * 6.2;
+  var pis  = Math.min(stato.pistacchio, byId.pistacchio.max) * 6.2;
+  var mist = Math.min(stato.latte + stato.caffe, 11) * 6.0;
+  var sch  = Math.min(stato.schiuma, byId.schiuma.max) * 5.6;
+  var tot  = nut + pis + mist + sch, MAX = 84;
+  if (tot > MAX) { var k = MAX / tot; nut *= k; pis *= k; mist *= k; sch *= k; tot = MAX; }
+  return { nut: nut, pis: pis, mist: mist, sch: sch, tot: tot };
+}
+function yPelo() { return Y_FONDO + (altezze().tot / 100) * CORSA; }
+
+/* Surface height at a given distance from the axis.
+   Needed for granules and bubbles: with foam the top is a dome,
+   not a flat plane, and resting them all at the apex height left
+   the outer ones hanging in mid-air in a ring.                */
+function quotaSuperficie(rr) {
+  var h = altezze();
+  var yLiq = Y_FONDO + u(h.nut + h.pis + h.mist);
+  if (h.sch <= 0.05) return yLiq;
+  var sh = u(h.sch), hCup = Math.min(0.15, sh * 0.55);
+  var q = Math.min(rr / (R_INT * 0.99), 1);
+  return yLiq + (sh - hCup) + hCup * Math.sqrt(Math.max(0, 1 - q * q));
+}
+function pieno()  { return Object.keys(stato).some(function (k) { return stato[k] > 0; }); }
+function u(pct)   { return (pct / 100) * CORSA; }
+
+/* color of the milk+coffee mix: interpolated by ratio */
+function coloreMisto() {
+  var l = stato.latte, c = stato.caffe, t = l + c;
+  if (!t) return 0xF3E7D2;
+  var q = c / t;
+  var a = { r: 0xF6, g: 0xEC, b: 0xD8 }, b = { r: 0x4A, g: 0x2A, b: 0x14 };
+  var m = 1 - Math.pow(1 - q, 1.35);
+  return ((a.r + (b.r - a.r) * m) << 16 | (a.g + (b.g - a.g) * m) << 8 | (a.b + (b.b - a.b) * m)) & 0xffffff;
+}
+
+function disponi(anim) {
+  var h = altezze(), d = anim === false ? 0 : 0.95, e = 'back.out(1.35)';
+  var y = Y_FONDO;
+
+  function set(mesh, pct) {
+    var vis = pct > 0.05;
+    mesh.visible = vis;
+    var alt = Math.max(u(pct), 0.0001), yy = y;
+    if (vis) y += u(pct);
+    if (d && window.gsap) {
+      gsap.to(mesh.scale, { y: alt, duration: d, ease: e, overwrite: true });
+      gsap.to(mesh.position, { y: yy, duration: d, ease: e, overwrite: true });
+    } else { mesh.scale.y = alt; mesh.position.y = yy; }
+  }
+
+  set(G.nutella, h.nut);
+  set(G.pistacchio, h.pis);
+  ridipingiMisto();
+  set(G.misto, h.mist);
+
+  /* the ice gets stained only as far as the drink reaches: if
+     there's no mix (just creams at the bottom) nothing should
+     get stained */
+  G.uPelo.value = h.mist > 0.05 ? y : -99;
+  G.uTinta.value.setHex(coloreMisto());
+
+  /* FOAM: a rising body + a dome of nearly fixed height. The
+     dome is also capped at half the total thickness, so a
+     single dose stays a light veil, not a cap.               */
+  var sVis = h.sch > 0.05;
+  var sh   = Math.max(u(h.sch), 0.0001);
+  var hCup = Math.min(0.15, sh * 0.55);
+  var hCor = Math.max(sh - hCup, 0.0001);
+  var rr   = R_INT * 0.99;
+  G.schiumaCorpo.visible = sVis; G.schiumaCupola.visible = sVis;
+
+  var sCor = sVis ? { x: rr, y: hCor, z: rr } : { x: 0.0001, y: 0.0001, z: 0.0001 };
+  var sCup = sVis ? { x: rr, y: hCup, z: rr } : { x: 0.0001, y: 0.0001, z: 0.0001 };
+  if (d && window.gsap) {
+    gsap.to(G.schiumaCorpo.scale,  Object.assign({ duration: d, ease: e, overwrite: true }, sCor));
+    gsap.to(G.schiumaCupola.scale, Object.assign({ duration: d, ease: e, overwrite: true }, sCup));
+    gsap.to(G.schiumaCorpo.position,  { y: y, duration: d, ease: e, overwrite: true });
+    gsap.to(G.schiumaCupola.position, { y: y + hCor, duration: d, ease: e, overwrite: true });
+  } else {
+    G.schiumaCorpo.scale.set(sCor.x, sCor.y, sCor.z);   G.schiumaCorpo.position.y = y;
+    G.schiumaCupola.scale.set(sCup.x, sCup.y, sCup.z);  G.schiumaCupola.position.y = y + hCor;
+  }
+
+  riposiziona();
+  aggiornaHint(h.tot);
+}
+
+function aggiornaHint(tot) {
+  var p = document.getElementById('fillPct');
+  if (p) p.textContent = Math.round(tot) + '% full';
+  var hh = document.getElementById('hint');
+  if (!hh) return;
+  var n = Object.keys(stato).reduce(function (a, k) { return a + stato[k]; }, 0);
+  hh.textContent = !pieno() ? 'The glass is empty'
+    : tot > 78 ? 'The glass is nearly full'
+    : 'Building — ' + n + (n === 1 ? ' dose' : ' doses');
+}
+
+/* ── 7. EFFECTS ──────────────────────────────────────────── */
+function getto(colore, denso) {
+  var r = denso ? 0.05 : 0.028;
+  var g = new THREE.CylinderGeometry(r, r * 0.82, 1, 18, 1, true);
+  g.translate(0, -0.5, 0);                                  /* pivot at the top */
+  var m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({
+    color: col(new THREE.Color(colore).getHex()), roughness: 0.14, metalness: 0.02, side: THREE.DoubleSide
+  }));
+  m.position.set((Math.random() - 0.5) * 0.2, Y_ORLO + 1.1, (Math.random() - 0.5) * 0.14);
+  m.scale.y = 0.0001;
+  G.gFx.add(m);
+
+  var dur = denso ? 1.0 : 0.66;
+  var lung = Y_ORLO + 1.1 - yPelo();
+  if (!window.gsap || REDUCED) {
+    setTimeout(function () { G.gFx.remove(m); m.geometry.dispose(); m.material.dispose(); }, 60);
+    return dur * 1000;
+  }
+  gsap.timeline({ onComplete: function () { G.gFx.remove(m); m.geometry.dispose(); m.material.dispose(); } })
+    .to(m.scale, { y: lung, duration: dur * 0.34, ease: 'power2.out' })
+    .to(m.scale, { y: lung, duration: dur * 0.40 })
+    .to(m.scale, { y: 0.0001, duration: dur * 0.26, ease: 'power1.in' });
+  return dur * 1000;
+}
+
+function onda(k) {
+  if (REDUCED || !window.gsap) return;
+  var m = new THREE.Mesh(
+    new THREE.RingGeometry(R_INT * 0.24, R_INT * 0.34, 40),
+    new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5,
+      side: THREE.DoubleSide, depthWrite: false })
+  );
+  m.rotation.x = -Math.PI / 2;
+  m.position.y = yPelo() + 0.012;
+  G.gFx.add(m);
+  gsap.to(m.scale, { x: k || 2.6, z: k || 2.6, duration: 0.85, ease: 'power2.out' });
+  gsap.to(m.material, { opacity: 0, duration: 0.85, ease: 'power2.out',
+    onComplete: function () { G.gFx.remove(m); m.geometry.dispose(); m.material.dispose(); } });
+}
+
+function sussulto(mesh) {
+  if (REDUCED || !window.gsap || !mesh.visible) return;
+  gsap.fromTo(mesh.scale, { x: 1.035, z: 1.035 },
+    { x: 1, z: 1, duration: 0.75, ease: 'elastic.out(1,0.45)' });
+}
+
+/* ── ICE STACK ─────────────────────────────────────────────
+   Cubes don't all sit flat on the bottom: they wedge into one
+   another forming a crooked column that rises inside the
+   glass. The vertical step is the height each new cube adds to
+   the stack — less than its side, because it wedges into the
+   gaps of the one below.                                      */
+function baseCatasta() {
+  /* Ice goes in FIRST and the liquid gets poured around it: the
+     stack rests on the bottom and does NOT move as milk and
+     coffee rise — it's the liquid's surface that rises between
+     the cubes. The exception is the creams (chocolate spread,
+     pistachio), which are dense, stay on the bottom, and if
+     anything lift the stack.
+     The base used to follow the liquid surface and the cubes
+     all ended up floating on top, which isn't how ice sits in
+     a glass.                                                  */
+  var h = altezze();
+  return Y_FONDO + u(h.nut + h.pis);
+}
+
+/* the topmost cube can stick out over the rim, but only by half
+   its height: beyond that it would look like it's floating    */
+var CIMA = Y_ORLO + 0.10;
+
+function passoCatasta(n) {
+  var spazio = CIMA - baseCatasta();
+  var naturale = 0.25;                       /* typical interlock */
+  /* if there are a lot of cubes, the stack compresses instead
+     of spilling out of the glass */
+  return Math.min(naturale, spazio / Math.max(n, 1));
+}
+
+function yRiposo(size, i) {
+  var y = baseCatasta() + size * 0.55 + i * passoCatasta(ghiaccioEls.length || 1);
+  return Math.min(y, CIMA);
+}
+
+function riposiziona() {
+  if (!window.gsap) return;
+  ghiaccioEls.forEach(function (it, i) {
+    if (it.cade) return;
+    gsap.to(it.m.position, { y: yRiposo(it.size, i), duration: 0.85, ease: 'power2.out', overwrite: 'auto' });
+  });
+  granellaEls.forEach(function (it) {
+    if (it.cade) return;
+    gsap.to(it.m.position, { y: quotaSuperficie(it.r) + it.j, duration: 0.75, ease: 'power2.out', overwrite: 'auto' });
+  });
+  bolleEls.forEach(function (b) {
+    /* the foam now occupies exactly its own height, so its top
+       coincides with the overall surface */
+    gsap.to(b.position, { y: quotaSuperficie(b.userData.r) - 0.012, duration: 0.7, ease: 'power2.out', overwrite: 'auto' });
+  });
+}
+
+function aggiungiGhiaccio(n) {
+  for (var i = 0; i < n && ghiaccioEls.length < 12; i++) {
+    var k = ghiaccioEls.length;
+    var size = 0.37 + Math.random() * 0.11;          /* large pieces */
+    var mat = G.matGhiaccio[k % 3];
+    var m = new THREE.Mesh(G.geoCubi[k % 3], mat);
+    m.castShadow = true;
+    /* not all perfect cubes: some are shorter or wider */
+    m.scale.set(size, size * (0.80 + Math.random() * 0.22), size * (0.92 + Math.random() * 0.16));
+
+    /* crooked column: each cube offset from the previous one,
+       but without poking outside the glass wall */
+    var a = k * 2.39 + Math.random() * 0.7;          /* progressive turn */
+    var rr = 0.05 + Math.random() * 0.11;
+    m.position.set(Math.cos(a) * rr, Y_ORLO + 1.35, Math.sin(a) * rr);
+
+    /* resting tilt: noticeable but plausible, like cubes wedging
+       in crooked inside the glass */
+    var rx = (Math.random() - 0.5) * 1.15;
+    var ry = Math.random() * Math.PI * 2;
+    var rz = (Math.random() - 0.5) * 1.15;
+    m.rotation.set(rx - 0.8, ry - 1.2, rz + 0.7);    /* starts rotated, lands upright */
+    G.gGhiaccio.add(m);
+
+    var it = { m: m, size: size, cade: true };
+    ghiaccioEls.push(it);
+    var yr = yRiposo(size, k);
+
+    if (!window.gsap || REDUCED) {
+      m.position.y = yr; m.rotation.set(rx, ry, rz); it.cade = false;
+      riposiziona(); continue;
+    }
+    (function (it, m, yr, d, rx, ry, rz) {
+      gsap.timeline({ delay: d, onComplete: function () {
+          it.cade = false;
+          onda(1.7);
+          /* no bobbing: it would look wrong in a stack. Just a
+             very slow, barely perceptible drift.               */
+          gsap.to(m.rotation, { y: m.rotation.y + 0.14, duration: 6,
+            ease: 'sine.inOut', yoyo: true, repeat: -1 });
+        } })
+        .to(m.position, { y: yr - 0.07, duration: 0.44, ease: 'power1.in' })
+        .to(m.position, { y: yr + 0.045, duration: 0.17, ease: 'power2.out' })
+        .to(m.position, { y: yr, duration: 0.26, ease: 'power1.inOut' });
+      gsap.to(m.rotation, { x: rx, y: ry, z: rz, duration: 0.9, delay: d, ease: 'power2.out' });
+    })(it, m, yr, i * 0.11, rx, ry, rz);
+  }
+  /* cubes already present resettle to make room */
+  riposiziona();
+}
+
+/* Granella: real fine granules, not chunky flakes. The size
+   stated on the label is 2–4 mm, and at the scene's scale
+   (1 unit ≈ 6.4 cm) that means a radius of 0.016–0.032.
+   Used to be three times bigger and only 7 per dose, so it
+   always looked like the same four pieces: now each dose
+   pours 18, so the handful visibly grows.                    */
+var GRAN_PER_DOSE = 18;
+
+function aggiungiGranella(n) {
+  for (var i = 0; i < n && granellaEls.length < 150; i++) {
+    var size = 0.016 + Math.random() * 0.016;
+    /* Object3D, not Mesh: it doesn't enter the scene, it just
+       carries the transform that later ends up in the instance */
+    var m = new THREE.Object3D();
+    var k = size / 0.5;
+    m.scale.set(k * (0.8 + Math.random() * 0.45), k * (0.75 + Math.random() * 0.5),
+                k * (0.8 + Math.random() * 0.45));
+    /* disc distribution: without the square root they'd all
+       pile up in the center instead of spreading over the surface */
+    var a = Math.random() * Math.PI * 2;
+    var rr = Math.sqrt(Math.random()) * R_INT * 0.88;
+    m.position.set(Math.cos(a) * rr, Y_ORLO + 1.0, Math.sin(a) * rr);
+    m.rotation.set(Math.random() * 3, Math.random() * 3, Math.random() * 3);
+    granelliVivi.push(m);
+
+    var j = 0.004 + Math.random() * 0.022;
+    var it = { m: m, j: j, r: rr, cade: true };
+    granellaEls.push(it);
+    var yr = quotaSuperficie(rr) + j;
+    if (!window.gsap || REDUCED) { m.position.y = yr; it.cade = false; continue; }
+    (function (it, m, yr, d) {
+      gsap.to(m.position, { y: yr, duration: 0.42 + Math.random() * 0.18, delay: d, ease: 'power1.in',
+        onComplete: function () { it.cade = false; } });
+      gsap.to(m.rotation, { x: m.rotation.x + 2.4, z: m.rotation.z + 1.8, duration: 0.55, delay: d, ease: 'power1.out' });
+    })(it, m, yr, i * 0.012);
+  }
+}
+
+function bolleSchiuma() {
+  if (REDUCED) return;
+  for (var i = 0; i < 5 && bolleEls.length < 26; i++) {
+    var b = new THREE.Mesh(
+      new THREE.SphereGeometry(0.018 + Math.random() * 0.022, 10, 8),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.55 })
+    );
+    var a = Math.random() * Math.PI * 2, rr = Math.random() * R_INT * 0.8;
+    b.userData.r = rr;
+    b.position.set(Math.cos(a) * rr, quotaSuperficie(rr) - 0.012, Math.sin(a) * rr);
+    b.scale.setScalar(0.001);
+    G.gFx.add(b); bolleEls.push(b);
+    if (window.gsap) gsap.to(b.scale, { x: 1, y: 1, z: 1, duration: 0.45, delay: i * 0.05, ease: 'back.out(2)' });
+    else b.scale.setScalar(1);
+  }
+}
+
+/* ── 8. ADDING A DOSE ─────────────────────────────────────── */
+var AZIONI = {
+  ghiaccio: function () { aggiungiGhiaccio(2); },
+  granella: function () { aggiungiGranella(GRAN_PER_DOSE); },
+  schiuma:  function () { setTimeout(function () { disponi(); bolleSchiuma(); }, 90); },
+  latte:      function () { versa('#FFF7E8', false, G.misto);
+                            setTimeout(function(){ colata('rgba(255,247,232,0.95)'); }, 420); },
+  caffe:      function () { versa('#43260F', false, G.misto);
+                            setTimeout(function(){ colata('rgba(48,26,12,0.95)'); }, 420); },
+  pistacchio: function () { versa('#8FA466', true,  G.pistacchio); },
+  nutella:    function () { versa('#3E2011', true,  G.nutella); }
+};
+
+function versa(colore, denso, mesh) {
+  var ms = getto(colore, denso);
+  setTimeout(function () {
+    disponi();
+    onda(denso ? 2.0 : 2.6);
+    sussulto(mesh);
+  }, ms * (denso ? 0.5 : 0.4));
+}
+
+function aggiungi(id) {
+  if (tracimando) return;                 /* no service while overflowing */
+  var r = byId[id];
+  if (stato[id] >= r.max) { insisti(id); return; }
+
+  var primaTot = altezze().tot;
+  stato[id]++;
+  (AZIONI[id] || function () { disponi(); })();
+  if (id !== 'schiuma') disponi();
+  aggiornaScheda(id);
+  renderScontrino();
+
+  /* If the glass was already at the top, the extra dose raised
+     nothing: this counts as insistence too.
+     Only applies to things that take up volume — ice and
+     granules NEVER raise the level, so here they'd be mistaken
+     for insistence and just three cubes after a coffee would be
+     enough to make the glass overflow for no reason.          */
+  if (VOLUMETRICI[id] && altezze().tot - primaTot < 0.4 && primaTot > 1) insisti(id, true);
+  else insistenze = 0;
+}
+
+function lampeggiaMax(id) {
+  var el = document.querySelector('.prod[data-id="' + id + '"]');
+  if (!el || !window.gsap) return;
+  gsap.fromTo(el, { x: -3 }, { x: 0, duration: 0.5, ease: 'elastic.out(1,0.35)' });
+}
+
+/* ── TOO FULL ──────────────────────────────────────────────
+   Insisting on an item that's maxed out (or keeping pouring
+   into a glass that's already full to the top) raises the
+   tension: first the card shakes, then the whole counter
+   trembles. On the third attempt the glass really overflows
+   and empties itself.                                        */
+var insistenze = 0, tracimando = false;
+var SOGLIA_TRACIMA = 3;
+/* items that take up volume in the glass (see altezze) */
+var VOLUMETRICI = { latte: 1, caffe: 1, nutella: 1, pistacchio: 1, schiuma: 1 };
+
+function insisti(id, gia) {
+  if (tracimando) return;
+  insistenze++;
+  if (!gia) lampeggiaMax(id);
+
+  var h = document.getElementById('hint');
+  if (insistenze >= SOGLIA_TRACIMA) { tracimazione(); return; }
+  if (h) {
+    h.textContent = insistenze === 1
+      ? 'Maximum dose reached for this item'
+      : 'Careful, the glass won\'t take any more…';
+  }
+  trema(insistenze * 3.2);
+}
+
+/* counter jolt: I shake the canvas, so the glass and its
+   contents tremble together without touching the scene       */
+function trema(px) {
+  var cv = document.getElementById('glc');
+  if (!cv || !window.gsap || REDUCED) return;
+  gsap.fromTo(cv, { x: -px },
+    { x: 0, duration: 0.65, ease: 'elastic.out(1.6,0.28)', overwrite: true });
+}
+
+function aggiornaScheda(id) {
+  var q = document.querySelector('.prod-qty[data-id="' + id + '"]');
+  var b = document.querySelector('.prod-add[data-id="' + id + '"]');
+  if (q) {
+    q.textContent = stato[id];
+    if (window.gsap) gsap.fromTo(q, { scale: 0.4, opacity: 0 },
+      { scale: 1, opacity: stato[id] ? 1 : 0, duration: 0.4, ease: 'back.out(2.4)' });
+    else q.style.opacity = stato[id] ? 1 : 0;
+  }
+  if (b && stato[id]) {
+    b.textContent = '✓'; b.classList.add('on');
+    setTimeout(function () { b.textContent = '+'; b.classList.remove('on'); }, 900);
+  }
+}
+
+/* ── 9. EMPTY ─────────────────────────────────────────────── */
+function svuota() {
+  REFERENZE.forEach(function (r) { stato[r.id] = 0; });
+  insistenze = 0;
+  COLATE.length = 0; ridipingiMisto();
+
+  [G.nutella, G.pistacchio, G.misto].forEach(function (m) {
+    if (window.gsap) gsap.to(m.scale, { y: 0.0001, duration: 0.8, ease: 'power2.inOut', overwrite: true,
+      onComplete: function () { m.visible = false; } });
+    else { m.scale.y = 0.0001; m.visible = false; }
+    if (window.gsap) gsap.to(m.position, { y: Y_FONDO, duration: 0.8, ease: 'power2.inOut', overwrite: true });
+  });
+  [G.schiumaCorpo, G.schiumaCupola].forEach(function (m) {
+    if (window.gsap) gsap.to(m.scale, { x: 0.0001, y: 0.0001, z: 0.0001, duration: 0.8,
+      ease: 'power2.inOut', overwrite: true, onComplete: function () { m.visible = false; } });
+    else { m.scale.setScalar(0.0001); m.visible = false; }
+  });
+
+  function spegni(arr, gruppo) {
+    arr.forEach(function (it, i) {
+      var m = it.m || it;
+      if (window.gsap) {
+        gsap.killTweensOf(m.position); gsap.killTweensOf(m.rotation); gsap.killTweensOf(m.scale);
+        gsap.to(m.position, { y: -1.2, duration: 0.5, delay: i * 0.018, ease: 'power1.in' });
+        gsap.to(m.scale, { x: 0.001, y: 0.001, z: 0.001, duration: 0.45, delay: i * 0.018 + 0.08,
+          onComplete: function () { gruppo.remove(m); } });
+      } else gruppo.remove(m);
+    });
+    arr.length = 0;
+  }
+  spegni(ghiaccioEls, G.gGhiaccio);
+  spegni(granellaEls, G.granelli);
+  bolleEls.forEach(function (b) {
+    if (window.gsap) gsap.killTweensOf(b.scale);
+    G.gFx.remove(b); b.geometry.dispose(); b.material.dispose();
+  });
+  bolleEls.length = 0;
+
+  document.querySelectorAll('.prod-qty').forEach(function (q) { q.textContent = ''; q.style.opacity = 0; });
+  aggiornaHint(0);
+  renderScontrino();
+}
+
+/* drops running down the outer wall of the glass */
+function colatura(colore, n) {
+  if (REDUCED || !window.gsap) return;
+  for (var i = 0; i < n; i++) {
+    var g = new THREE.Mesh(
+      new THREE.SphereGeometry(0.026 + Math.random() * 0.026, 10, 8),
+      new THREE.MeshStandardMaterial({ color: col(colore), roughness: 0.25, metalness: 0 })
+    );
+    /* angles weighted toward the viewer: drops behind the
+       glass wouldn't be seen and would feel wasted */
+    var a = -Math.PI / 2 + (Math.random() - 0.5) * 2.7;
+    var rag = 0.655 + Math.random() * 0.02;
+    g.position.set(Math.cos(a) * rag, Y_ORLO + 0.06, Math.sin(a) * rag);
+    g.scale.y = 1.5 + Math.random();                  /* stretched drop */
+    G.gFx.add(g);
+    (function (g, d) {
+      gsap.to(g.position, { y: 0.02, duration: 1.05 + Math.random() * 0.5, delay: d,
+        ease: 'power1.in' });
+      gsap.to(g.scale, { x: 0.2, y: 0.2, z: 0.2, duration: 0.35, delay: d + 0.95,
+        onComplete: function () { G.gFx.remove(g); g.geometry.dispose(); g.material.dispose(); } });
+    })(g, i * 0.045 + Math.random() * 0.12);
+  }
+}
+
+/* puddle on the counter, around the base */
+function pozza(colore) {
+  if (!window.gsap) return null;
+  var cv = document.createElement('canvas'); cv.width = cv.height = 128;
+  var cx = cv.getContext('2d');
+  var gr = cx.createRadialGradient(64, 64, 8, 64, 64, 64);
+  gr.addColorStop(0, 'rgba(255,255,255,.85)');
+  gr.addColorStop(0.65, 'rgba(255,255,255,.45)');
+  gr.addColorStop(1, 'rgba(255,255,255,0)');
+  cx.fillStyle = gr; cx.fillRect(0, 0, 128, 128);
+  var tex = new THREE.CanvasTexture(cv);
+  /* darkened relative to the drink: a wet stain on the counter
+     is darker than the surface, whereas with the raw color (a
+     light latte) it disappeared against the counter's cream   */
+  var tinta = new THREE.Color(col(colore)).multiplyScalar(0.42);
+  var m = new THREE.Mesh(
+    new THREE.PlaneGeometry(2.6, 2.6),
+    new THREE.MeshBasicMaterial({ map: tex, color: tinta, transparent: true,
+      opacity: 0, depthWrite: false })
+  );
+  m.rotation.x = -Math.PI / 2;
+  m.position.y = 0.006;
+  m.scale.setScalar(0.35);
+  G.gFx.add(m);
+  gsap.to(m.scale, { x: 1, y: 1, z: 1, duration: 1.5, ease: 'power2.out' });
+  gsap.to(m.material, { opacity: 0.62, duration: 0.7, ease: 'power1.out' });
+  return m;
+}
+
+function tracimazione() {
+  if (tracimando) return;
+  tracimando = true;
+  insistenze = 0;
+
+  var h = document.getElementById('hint');
+  if (h) h.textContent = 'Too full — the glass has overflowed';
+
+  var liquido = altezze().mist > 0.05;
+  var tinta = liquido ? coloreMisto() : 0xF3E7D2;
+
+  if (!window.gsap || REDUCED) {                       /* no animations: just empty */
+    svuota(); tracimando = false; return;
+  }
+
+  trema(14);
+  document.querySelectorAll('.prod').forEach(function (el) {
+    gsap.fromTo(el, { x: -2 }, { x: 0, duration: 0.7, ease: 'elastic.out(1,0.3)' });
+  });
+
+  /* 1 — the level rises to the rim.
+     I only inflate the topmost of the visible layers: raising
+     all of them would make them interpenetrate. And I bring it
+     right to the edge, not by some fixed amount — a relative
+     increase on a half-full glass never actually reached the
+     rim and the effect didn't read.                           */
+  var cima = G.schiumaCorpo.visible ? null
+           : G.misto.visible ? G.misto
+           : G.pistacchio.visible ? G.pistacchio
+           : G.nutella.visible ? G.nutella : null;
+  if (cima) {
+    gsap.to(cima.scale, { y: Math.max((Y_ORLO + 0.05) - cima.position.y, 0.02),
+      duration: 0.42, ease: 'power2.out', overwrite: true });
+  } else if (G.schiumaCorpo.visible) {
+    /* with foam: the body rises to the rim and the dome climbs
+       on top of it, spreading out, like a hat that overflows  */
+    gsap.to(G.schiumaCorpo.scale, { y: Math.max((Y_ORLO - 0.06) - G.schiumaCorpo.position.y, 0.02),
+      duration: 0.42, ease: 'power2.out', overwrite: true });
+    gsap.to(G.schiumaCupola.scale, { x: R_INT * 1.15, z: R_INT * 1.15, y: 0.22,
+      duration: 0.45, ease: 'power2.out', overwrite: true });
+    gsap.to(G.schiumaCupola.position, { y: Y_ORLO - 0.06, duration: 0.45, ease: 'power2.out', overwrite: true });
+    if (G.misto.visible) {
+      gsap.to(G.misto.scale, { y: Math.max((Y_ORLO - 0.30) - G.misto.position.y, 0.02),
+        duration: 0.42, ease: 'power2.out', overwrite: true });
+    }
+  }
+  onda(3.4);
+
+  /* 2 — solids flung out over the rim */
+  function espelli(arr, gruppo, ritardo, forza) {
+    arr.forEach(function (it, i) {
+      var m = it.m || it;
+      gsap.killTweensOf(m.position); gsap.killTweensOf(m.rotation); gsap.killTweensOf(m.scale);
+      var a = Math.atan2(m.position.z, m.position.x) + (Math.random() - 0.5) * 1.2;
+      var fuori = 0.95 + Math.random() * forza;
+      var d = ritardo + i * 0.035;
+      gsap.timeline({ delay: d })
+        .to(m.position, { y: Y_ORLO + 0.35 + Math.random() * 0.3, duration: 0.32, ease: 'power2.out' })
+        .to(m.position, { x: Math.cos(a) * fuori, z: Math.sin(a) * fuori, y: -1.6,
+          duration: 0.85, ease: 'power1.in',
+          onComplete: function () { gruppo.remove(m); } }, '>-0.02');
+      gsap.to(m.position, { x: Math.cos(a) * fuori * 0.55, z: Math.sin(a) * fuori * 0.55,
+        duration: 0.32, delay: d, ease: 'power2.out' });
+      gsap.to(m.rotation, { x: m.rotation.x + (Math.random() - 0.5) * 7,
+        z: m.rotation.z + (Math.random() - 0.5) * 7, duration: 1.15, delay: d, ease: 'power1.out' });
+    });
+    arr.length = 0;
+  }
+  espelli(ghiaccioEls, G.gGhiaccio, 0.18, 0.5);
+  espelli(granellaEls, G.granelli, 0.22, 0.9);
+  bolleEls.forEach(function (b) {
+    gsap.killTweensOf(b.scale);
+    gsap.to(b.scale, { x: 0.001, y: 0.001, z: 0.001, duration: 0.3,
+      onComplete: function () { G.gFx.remove(b); b.geometry.dispose(); b.material.dispose(); } });
+  });
+  bolleEls.length = 0;
+
+  colatura(tinta, liquido ? 16 : 6);
+  var pz = pozza(tinta);
+
+  /* 3 — the glass empties out and the counter is wiped clean */
+  gsap.delayedCall(0.95, function () {
+    svuota();
+    if (h) h.textContent = 'Glass emptied — starting over';
+  });
+  gsap.delayedCall(2.6, function () {
+    if (pz) gsap.to(pz.material, { opacity: 0, duration: 1.1, ease: 'power1.in',
+      onComplete: function () { G.gFx.remove(pz); pz.geometry.dispose();
+        pz.material.map.dispose(); pz.material.dispose(); } });
+  });
+  gsap.delayedCall(3.9, function () {
+    tracimando = false;
+    aggiornaHint(0);
+  });
+}
+
+/* ── 10. PRODUCT CARDS ────────────────────────────────────── */
+function costruisciScaffale() {
+  var host = document.getElementById('shelf');
+  host.innerHTML = REFERENZE.map(function (r) {
+    return '<button class="prod" type="button" data-id="' + r.id + '" aria-label="Add ' + r.nome + '">' +
+      '<div class="prod-art">' +
+        '<canvas data-art="' + r.id + '"></canvas>' +
+        (r.tag ? '<span class="prod-tag ' + r.tagCls + '">' + r.tag + '</span>' : '') +
+        '<span class="prod-qty" data-id="' + r.id + '"></span>' +
+      '</div>' +
+      '<div class="prod-body">' +
+        '<div class="prod-code">' + r.codice + '</div>' +
+        '<div class="prod-name">' + r.nome + '</div>' +
+        '<div class="prod-sub">' + r.sub + '</div>' +
+        '<div class="nutri"><div class="nutri-h">Declared values</div>' +
+          r.nutri.map(function (n) { return '<div class="nrow"><span>' + n[0] + '</span><span>' + n[1] + '</span></div>'; }).join('') +
+        '</div>' +
+        '<div class="prod-bar">' + barcodeSVG(r.codice) + '</div>' +
+        '<div class="prod-foot">' +
+          '<div><div class="prod-price">&euro; ' + r.prezzo.toFixed(2).replace('.', ',') + '</div>' +
+          '<div class="prod-unit">/ ' + r.unita + ' &middot; max ' + r.max + '</div></div>' +
+          '<span class="prod-add" data-id="' + r.id + '">+</span>' +
+        '</div>' +
+      '</div></button>';
+  }).join('');
+
+  /* 2D label artwork (crisp on retina screens) */
+  REFERENZE.forEach(function (r) {
+    var c = host.querySelector('canvas[data-art="' + r.id + '"]');
+    if (!c) return;
+    var dpr = Math.min(devicePixelRatio, 2);
+    var w = c.clientWidth || 240, h = c.clientHeight || 104;
+    c.width = w * dpr; c.height = h * dpr;
+    var x = c.getContext('2d'); x.scale(dpr, dpr);
+    /* wide-proportion label: draw it square and crop the center */
+    var tmp = document.createElement('canvas'); tmp.width = tmp.height = 320;
+    disegnaEtichetta(tmp.getContext('2d'), r, 320, 320);
+    x.drawImage(tmp, 0, 44, 320, 232, 0, 0, w, h);
+  });
+
+  host.querySelectorAll('.prod').forEach(function (el) {
+    el.addEventListener('click', function () {
+      var id = el.dataset.id;
+      if (window.gsap) {
+        gsap.timeline()
+          .to(el, { scale: 0.985, duration: 0.1, ease: 'power2.out' })
+          .to(el, { scale: 1, duration: 0.3, ease: 'back.out(3)' });
+      }
+      aggiungi(id);
+    });
+  });
+}
+
+/* ── 11. PROFILES (one-click recipes) ────────────────────── */
+function costruisciMiscele() {
+  var host = document.getElementById('mixGrid');
+  host.innerHTML = MISCELE.map(function (m, i) {
+    return '<button class="mix" type="button" data-i="' + i + '">' +
+      '<div class="mix-n">' + m.n + '</div>' +
+      '<div class="mix-name">' + m.nome + '</div>' +
+      '<div class="mix-d">' + m.d + '</div>' +
+      '<div class="mix-tags">' + m.tags.map(function (t) { return '<i>' + t + '</i>'; }).join('') + '</div>' +
+      '<div class="mix-go">Build this profile &rarr;</div>' +
+      '</button>';
+  }).join('');
+
+  host.querySelectorAll('.mix').forEach(function (el) {
+    el.addEventListener('click', function () {
+      var m = MISCELE[+el.dataset.i];
+      svuota();
+      document.getElementById('bancone').scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });
+      /* pours the doses one at a time, so you can watch it build */
+      var passi = [];
+      Object.keys(m.ric).forEach(function (id) {
+        for (var i = 0; i < m.ric[id]; i++) passi.push(id);
+      });
+      var ordine = ['nutella','pistacchio','latte','caffe','ghiaccio','schiuma','granella'];
+      passi.sort(function (a, b) { return ordine.indexOf(a) - ordine.indexOf(b); });
+      passi.forEach(function (id, i) {
+        setTimeout(function () { aggiungi(id); }, 900 + i * (REDUCED ? 60 : 420));
+      });
+      apriModale(m, passi.length);
+    });
+  });
+}
+
+/* ── 12. RECEIPT ──────────────────────────────────────────── */
+function eur(n) { return '€ ' + n.toFixed(2).replace('.', ','); }
+
+function renderScontrino() {
+  var body = document.getElementById('contoBody');
+  var righe = REFERENZE.filter(function (r) { return stato[r.id] > 0; });
+
+  if (!righe.length) {
+    body.innerHTML = '<tr><td colspan="4" class="ct-empty">&mdash; no skills yet &middot; build your profile at the counter &mdash;</td></tr>';
+    document.getElementById('tSub').textContent = eur(0);
+    document.getElementById('tIva').textContent = eur(0);
+    document.getElementById('tTot').textContent = eur(0);
+    document.getElementById('tGram').textContent = '0 g';
+    return;
+  }
+
+  var sub = 0, gr = 0;
+  body.innerHTML = righe.map(function (r) {
+    var q = stato[r.id], imp = r.prezzo * q;
+    sub += imp; gr += (GRAMMI[r.id] || 0) * q;
+    return '<tr>' +
+      '<td><span class="ct-name">' + r.nome + '</span><span class="ct-code">' + r.sub + '</span></td>' +
+      '<td style="font-size:.52rem;color:var(--ink3)">' + r.codice + '</td>' +
+      '<td><span class="qctl">' +
+        '<button class="qb" data-q="-1" data-id="' + r.id + '" type="button" aria-label="Remove one dose">&minus;</button>' +
+        '<span class="qn">' + q + '</span>' +
+        '<button class="qb" data-q="1" data-id="' + r.id + '" type="button" aria-label="Add one dose">+</button>' +
+      '</span></td>' +
+      '<td>' + eur(imp) + '</td></tr>';
+  }).join('');
+
+  var iva = sub * 0.10;
+  document.getElementById('tSub').textContent = eur(sub);
+  document.getElementById('tIva').textContent = eur(iva);
+  document.getElementById('tTot').textContent = eur(sub + iva);
+  document.getElementById('tGram').textContent = gr + ' g';
+
+  body.querySelectorAll('.qb').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var id = b.dataset.id, d = +b.dataset.q;
+      if (d > 0) { aggiungi(id); return; }
+      if (stato[id] > 0) {
+        stato[id]--;
+        if (id === 'ghiaccio') togliUltimo(ghiaccioEls, G.gGhiaccio, 2);
+        if (id === 'granella') togliUltimo(granellaEls, G.granelli, GRAN_PER_DOSE);
+        disponi(); aggiornaScheda(id); renderScontrino();
+      }
+    });
+  });
+}
+
+function togliUltimo(arr, gruppo, n) {
+  for (var i = 0; i < n && arr.length; i++) {
+    var it = arr.pop(), m = it.m || it;
+    if (window.gsap) {
+      gsap.killTweensOf(m.position); gsap.killTweensOf(m.rotation);
+      gsap.to(m.scale, { x: 0.001, y: 0.001, z: 0.001, duration: 0.35,
+        onComplete: function () { gruppo.remove(m); } });
+    } else gruppo.remove(m);
+  }
+}
+
+/* ── 13. MODAL ───────────────────────────────────────────── */
+function apriModale(m, dosi) {
+  var costo = 0;
+  Object.keys(m.ric).forEach(function (id) { costo += byId[id].prezzo * m.ric[id]; });
+  document.getElementById('boxIn').innerHTML =
+    '<h3>' + m.nome + '</h3>' +
+    '<div class="box-sub">&#10003; being prepared at the counter</div>' +
+    Object.keys(m.ric).map(function (id) {
+      return '<div class="box-l">&rarr; ' + byId[id].nome + ' &middot; ' + m.ric[id] + ' doses</div>';
+    }).join('') +
+    '<div class="box-f"><div><div class="box-p">' + eur(costo * 1.10) + '</div>' +
+    '<div style="font-size:.5rem;color:var(--ink3);margin-top:2px">' + dosi + ' doses &middot; vat included</div></div>' +
+    '<a class="box-go" href="#conto" data-close>&rarr; Receipt</a></div>';
+  document.getElementById('ovl').classList.add('open');
+}
+function chiudiModale() { document.getElementById('ovl').classList.remove('open'); }
+
+/* ── 14. SUPPORTING CAST: ticker, cursor, reveal, meta ───── */
+function ticker() {
+  var voci = ['Content creation cut clean','<b>&#9733;</b>','Copywriting fresh for the day','<b>&#9733;</b>',
+    'Strategy roasted just right','<b>&#9733;</b>','Brand design DOP-certified','<b>&#9733;</b>',
+    'Social always polished','<b>&#9733;</b>','Crunchy problem solving','<b>&#9733;</b>',
+    'Public speaking, fine bubbles','<b>&#9733;</b>','Service at the counter','<b>&#9733;</b>',
+    'Not a fiscal receipt','<b>&#9733;</b>'];
+  var uno = voci.map(function (v) { return '<span>' + v + '</span>'; }).join('');
+  document.getElementById('tickIn').innerHTML = uno + uno;
+}
+
+function cursore() {
+  /* real mouse only: 'pointer: fine' excludes touch and thick pens */
+  if (!window.matchMedia('(pointer: fine)').matches) return;
+  if ('ontouchstart' in window || navigator.maxTouchPoints > 0) return;
+  if (innerWidth < 700) return;
+  document.body.classList.add('cur-on');
+  var c = document.getElementById('cur'), r = document.getElementById('curRing');
+  var x = 0, y = 0, rx = 0, ry = 0;
+  addEventListener('mousemove', function (e) {
+    x = e.clientX; y = e.clientY;
+    c.style.transform = 'translate(' + x + 'px,' + y + 'px) translate(-50%,-50%)';
+  }, { passive: true });
+  (function loop() {
+    requestAnimationFrame(loop);
+    rx += (x - rx) * 0.14; ry += (y - ry) * 0.14;
+    r.style.transform = 'translate(' + rx + 'px,' + ry + 'px) translate(-50%,-50%)';
+  })();
+  document.addEventListener('pointerover', function (e) {
+    var hot = e.target.closest('a,button,.prod,.mix');
+    document.body.classList.toggle('cur-hot', !!hot);
+  });
+}
+
+function reveal() {
+  if (REDUCED || !window.gsap) {
+    document.querySelectorAll('.rv').forEach(function (el) { el.style.opacity = 1; el.style.transform = 'none'; });
+    return;
+  }
+  document.querySelectorAll('.rv').forEach(function (el) {
+    gsap.to(el, {
+      opacity: 1, y: 0, duration: 0.85, ease: 'power3.out',
+      scrollTrigger: window.ScrollTrigger ? { trigger: el, start: 'top 88%' } : undefined
+    });
+  });
+  /* if ScrollTrigger isn't available, show everything right away */
+  if (!window.ScrollTrigger) {
+    document.querySelectorAll('.rv').forEach(function (el) { el.style.opacity = 1; el.style.transform = 'none'; });
+  }
+}
+
+function meta() {
+  var d = new Date();
+  var data = d.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  var ora = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  var n = String(Math.floor(Math.random() * 99999)).padStart(5, '0');
+  document.getElementById('headMeta').textContent = data + ' · ' + ora + ' · REGISTER 01';
+  document.getElementById('footMeta').textContent = 'RECEIPT NO. ' + n + ' · OPERATOR: COUNTER';
+}
+
+/* ── 15. STARTUP ─────────────────────────────────────────── */
+function avvia() {
+  if (typeof THREE === 'undefined') {
+    var l = document.getElementById('load');
+    if (l) l.textContent = 'Three.js failed to load — check your connection.';
+    return;
+  }
+  ticker(); meta(); cursore();
+  costruisciScaffale(); costruisciMiscele(); renderScontrino();
+  scenaHero(); scenaBancone();
+  disponi(false);
+  reveal();
+
+  document.getElementById('resetBtn').addEventListener('click', svuota);
+  document.getElementById('boxX').addEventListener('click', chiudiModale);
+  document.getElementById('ovl').addEventListener('click', function (e) {
+    if (e.target.id === 'ovl' || e.target.hasAttribute('data-close')) chiudiModale();
+  });
+  addEventListener('keydown', function (e) { if (e.key === 'Escape') chiudiModale(); });
+
+  document.getElementById('printBtn').addEventListener('click', function () {
+    if (!pieno()) { alert('The glass is empty: add at least one item from the counter.'); return; }
+    window.print();
+  });
+
+  if (window.gsap && !REDUCED) {
+    gsap.from('.hero-eyebrow', { opacity: 0, y: 16, duration: 0.8, delay: 0.15 });
+    gsap.from('.hero-t', { opacity: 0, y: 26, duration: 0.9, delay: 0.28 });
+    gsap.from('.hero-rule', { scaleX: 0, duration: 0.8, delay: 0.5 });
+    gsap.from('.hero-p', { opacity: 0, y: 16, duration: 0.8, delay: 0.6 });
+    gsap.from('.hero-cta', { opacity: 0, y: 16, duration: 0.8, delay: 0.75 });
+  }
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', avvia);
+else avvia();
+
+})();
+</script>
+</body>
+</html>
